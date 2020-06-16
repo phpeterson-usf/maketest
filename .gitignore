@@ -1,3 +1,7 @@
+# Program output
+output/
+*.log
+
 # Prerequisites
 *.d
 

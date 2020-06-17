@@ -21,57 +21,55 @@ endif
 
 .ONESHELL: # make cd work
 
-all: create_dir run_one_user
+all: create_dir $(USERS)
 
 # Build a directory hierarchy, e.g. output/cs315-20s/project03/phpeterson-usf
 EXPECTED = $(PWD)/expected/$(PROJECT).expected
-OUTDIR = "output/"/$(ORG)/$(PROJECT)
+OUTDIR = "output"/$(ORG)/$(PROJECT)
 create_dir:
-	mkdir -p $(OUTDIR)
+	@mkdir -p $(OUTDIR)
 
 clean:
 	rm -rf $(OUTDIR)
 
-# Clone, build, run, test for each user in USERS
-run_one_user:
+# clone is a callable function which pulls the repo if it doesn't already exist
+clone = \
+	if [ ! -d $@ ]; then \
+		git clone $(GIT_FLAGS) https://github.com/$(ORG)/$(PROJECT)-$(1) $(1); \
+	fi
+
+# build is a callable function which builds the project executable if it doesn't already exist
+build = \
+	cd $(1); \
+	if [ -f Makefile ]; then \
+		make >>$(LOG) 2>>$(LOG); \
+	else \
+		gcc -o nt nt.c >>$(LOG) 2>>$(LOG); \
+	fi
+
+# test is a callable function which runs the project executable and compares
+# its output to the expected output
+test = \
+	if [ -x nt ]; then \
+		./nt 0b1010 > $(PROJECT).actual; \
+		diff -s $(PROJECT).actual $(EXPECTED) >>$(LOG); \
+		if [ $$? -eq 0 ]; then \
+			echo "Passed"; \
+		else \
+			echo "Failed"; \
+		fi \
+	else \
+		echo "No Executable"; \
+	fi 
+	
+# $(USERS) is using the list of students as a list of make targets
+# so $@ is one student's name out of the list that make processes
+# Cool feature: you can test one student, or they can test themselves, 
+# e.g. make phpeterson
+$(USERS):
 	@cd $(OUTDIR)
-	$(foreach USER, $(USERS),
-		echo ""
-		echo "*****" $(USER) "*****"
-
-		# Pull the repo if it doesn't already exist
-		if [ ! -d $(USER) ]; then
-			echo -n "Cloning... "
-			git clone $(GIT_FLAGS) https://github.com/$(ORG)/$(PROJECT)-$(USER) $(USER) 1>>$(LOG)
-		fi
-		@cd $(USER)
-		
-		# Run the Makefile if there is one
-		echo -n "Building... "
-		if [ -f Makefile ]; then
-			make 1>>$(LOG)
-		else
-			gcc -o nt nt.c 1>>$(LOG)
-		fi
-		
-		# Run the the executable if it was built
-		if [ -f nt ]; then
-			./nt 0b1010 > $(PROJECT).actual
-		else
-			echo "No executable"
-		fi
-
-		# Diff the executable's actual output with the expected output
-		if [ -f $(PROJECT).actual ]; then
-			diff -s $(PROJECT).actual $(EXPECTED) 1>>$(LOG)
-			if [ $$? -eq 0 ]; then
-				echo "Identical"
-			else
-				echo "NOT identical"
-			fi
-		else
-			echo "No actual output"
-		fi
-		@cd ..
-	)
-
+	echo -n $@": " 
+	echo "\nUSER:"$@ >> $(LOG)
+	$(call clone,$@)
+	$(call build,$@)
+	$(call test,$@)

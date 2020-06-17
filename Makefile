@@ -2,21 +2,26 @@
 
 # Allow STUDENTS, PROJECT, and ORG to be specified on the command line, e.g.
 # make STUDENTS="ankitakhatri chelseaxkaye" PROJECT=project03
+# These names must match what you set up in GitHub Classroom
 ifndef $(STUDENTS)
-	STUDENTS=ankitakhatri chelseaxkaye chih98 dmoy2 dsamia25 gaokevin1 glatif1 kai-eiji mushi14 nljones4 phcarbajal pkmohabir1 rakesh-raju ravipat98 serenapang xli149
+	STUDENTS = ankitakhatri chelseaxkaye chih98 dmoy2 dsamia25 gaokevin1 glatif1 \
+	kai-eiji mushi14 nljones4 phcarbajal pkmohabir1 rakesh-raju ravipat98 serenapang xli149
 endif
 
 ifndef $(PROJECT)
-	PROJECT=project02
+	PROJECT = project02
 endif
 
 ifndef $(ORG)
-	ORG=cs315-20s
+	ORG = cs315-20s
 endif
 
 ifndef $(LOG)
-	LOG=/dev/null
-	GIT_FLAGS=--quiet
+	LOG := $(PWD)/$(PROJECT).log
+endif
+
+ifndef $(EXECUTABLE)
+	EXECUTABLE = nt
 endif
 
 # Set up these make targets for the clone, build, and test phase
@@ -37,32 +42,38 @@ proj_dir:
 
 clean:
 	rm -rf $(PROJ_DIR)
+	rm -rf $(LOG)
 
 # This target runs the clone out of github classroom using its URL format
 $(CLONE_TARGETS):
-	$(eval student=$(subst .clone,,$@))
+	$(eval student = $(subst .clone,,$@))
 	cd $(PROJ_DIR)
+	echo "clone: "$(student) | tee -a $(LOG)
+
 	if [ ! -d $(student) ]; then
-		git clone $(GIT_FLAGS) https://github.com/$(ORG)/$(PROJECT)-$(student) $(student)
+		git clone --quiet https://github.com/$(ORG)/$(PROJECT)-$(student) $(student)
 	fi
 
 # This target makes each of the student projects
 $(BUILD_TARGETS):
-	$(eval student=$(subst .build,,$@))
+	$(eval student = $(subst .build,,$@))
 	cd $(PROJ_DIR)/$(student)
+	echo "build: "$(student) | tee -a $(LOG)
+
 	if [ -f Makefile ]; then
-		make
+		make 1>>$(LOG) 2>>$(LOG)
 	else
-		gcc -o nt nt.c
+		gcc -o $(EXECUTABLE) nt.c 1>>$(LOG) 2>>$(LOG) # assumption if no Makefile
 	fi
 
 # This target tests each of the student projects, comparing actual output to expected
 $(TEST_TARGETS):
-	$(eval student=$(subst .test,,$@))
+	$(eval student = $(subst .test,,$@))
 	cd $(PROJ_DIR)/$(student)
-	echo -n $(student)": "
-	if [ -x nt ]; then
-		./nt 0b1010 >$(PROJECT).actual
+	echo -n "test: "$(student) | tee -a $(LOG)
+
+	if [ -x $(EXECUTABLE) ]; then
+		./$(EXECUTABLE) 0b1010 >$(PROJECT).actual
 		if [ -f $(PROJECT).actual ]; then
 			diff -s $(PROJECT).actual $(EXPECTED) >>$(LOG)
 			if [ $$? -eq 0 ]; then

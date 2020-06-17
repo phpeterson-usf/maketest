@@ -1,9 +1,9 @@
 # maketest -- This Makefile can pull, build, and test projects from GitHub Classroom
 
-# Allow USERS, PROJECT, and ORG to be specified on the command line, e.g.
-# make USERS="ankitakhatri chelseaxkaye" PROJECT=project03
-ifndef $(USERS)
-	USERS=ankitakhatri chelseaxkaye chih98 dmoy2 dsamia25 gaokevin1 glatif1 kai-eiji mushi14 nljones4 phcarbajal pkmohabir1 rakesh-raju ravipat98 serenapang xli149
+# Allow STUDENTS, PROJECT, and ORG to be specified on the command line, e.g.
+# make STUDENTS="ankitakhatri chelseaxkaye" PROJECT=project03
+ifndef $(STUDENTS)
+	STUDENTS=ankitakhatri chelseaxkaye chih98 dmoy2 dsamia25 gaokevin1 glatif1 kai-eiji mushi14 nljones4 phcarbajal pkmohabir1 rakesh-raju ravipat98 serenapang xli149
 endif
 
 ifndef $(PROJECT)
@@ -19,57 +19,61 @@ ifndef $(LOG)
 	GIT_FLAGS=--quiet
 endif
 
-.ONESHELL: # make cd work
+# Set up these make targets for the clone, build, and test phase
+# My approach relies on these kludgey names to generate unique targets
+$(foreach s, $(STUDENTS), $(eval CLONE_TARGETS += $(s).clone))
+$(foreach s, $(STUDENTS), $(eval BUILD_TARGETS += $(s).build))
+$(foreach s, $(STUDENTS), $(eval TEST_TARGETS += $(s).test))
 
-all: create_dir $(USERS)
+.ONESHELL: # make cd work
+.PHONY: all clean proj_dir
+all: proj_dir $(CLONE_TARGETS) $(BUILD_TARGETS) $(TEST_TARGETS)
 
 # Build a directory hierarchy, e.g. output/cs315-20s/project03/phpeterson-usf
 EXPECTED = $(PWD)/expected/$(PROJECT).expected
-OUTDIR = "output"/$(ORG)/$(PROJECT)
-create_dir:
-	@mkdir -p $(OUTDIR)
+PROJ_DIR = output/$(ORG)/$(PROJECT)
+proj_dir:
+	@mkdir -p $(PROJ_DIR)
 
 clean:
-	rm -rf $(OUTDIR)
+	rm -rf $(PROJ_DIR)
 
-# clone is a callable function which pulls the repo if it doesn't already exist
-clone = \
-	if [ ! -d $@ ]; then \
-		git clone $(GIT_FLAGS) https://github.com/$(ORG)/$(PROJECT)-$(1) $(1); \
+# This target runs the clone out of github classroom using its URL format
+$(CLONE_TARGETS):
+	$(eval student=$(subst .clone,,$@))
+	cd $(PROJ_DIR)
+	if [ ! -d $(student) ]; then
+		git clone $(GIT_FLAGS) https://github.com/$(ORG)/$(PROJECT)-$(student) $(student)
 	fi
 
-# build is a callable function which builds the project executable if it doesn't already exist
-build = \
-	cd $(1); \
-	if [ -f Makefile ]; then \
-		make >>$(LOG) 2>>$(LOG); \
-	else \
-		gcc -o nt nt.c >>$(LOG) 2>>$(LOG); \
+# This target makes each of the student projects
+$(BUILD_TARGETS):
+	$(eval student=$(subst .build,,$@))
+	cd $(PROJ_DIR)/$(student)
+	if [ -f Makefile ]; then
+		make
+	else
+		gcc -o nt nt.c
 	fi
 
-# test is a callable function which runs the project executable and compares
-# its output to the expected output
-test = \
-	if [ -x nt ]; then \
-		./nt 0b1010 > $(PROJECT).actual; \
-		diff -s $(PROJECT).actual $(EXPECTED) >>$(LOG); \
-		if [ $$? -eq 0 ]; then \
-			echo "Passed"; \
-		else \
-			echo "Failed"; \
-		fi \
-	else \
-		echo "No Executable"; \
-	fi 
+# This target tests each of the student projects, comparing actual output to expected
+$(TEST_TARGETS):
+	$(eval student=$(subst .test,,$@))
+	cd $(PROJ_DIR)/$(student)
+	echo -n $(student)": "
+	if [ -x nt ]; then
+		./nt 0b1010 >$(PROJECT).actual
+		if [ -f $(PROJECT).actual ]; then
+			diff -s $(PROJECT).actual $(EXPECTED) >>$(LOG)
+			if [ $$? -eq 0 ]; then
+				echo "pass!"
+			else
+				echo "fail"
+			fi
+		else
+			echo "no output"
+		fi
+	else
+		echo "no executable"
+	fi
 	
-# $(USERS) is using the list of students as a list of make targets
-# so $@ is one student's name out of the list that make processes
-# Cool feature: you can test one student, or they can test themselves, 
-# e.g. make phpeterson
-$(USERS):
-	@cd $(OUTDIR)
-	echo -n $@": " 
-	echo "\nUSER:"$@ >> $(LOG)
-	$(call clone,$@)
-	$(call build,$@)
-	$(call test,$@)

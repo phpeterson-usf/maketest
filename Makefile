@@ -22,7 +22,7 @@ ifndef $(EXECUTABLE)
 endif
 
 # Build a directory hierarchy, e.g. output/cs315-20s/project03/phpeterson-usf
-EXPECTED := $(PWD)/expected/$(PROJECT)/
+TESTS_DIR := $(PWD)/tests/$(PROJECT)
 PROJ_DIR := $(PWD)/output/$(ORG)/$(PROJECT)
 LOG := $(PROJ_DIR)/$(PROJECT).log
 
@@ -36,11 +36,11 @@ $(foreach s, $(STUDENTS), $(eval CLONE_TARGETS += $(s).clone))
 $(foreach s, $(STUDENTS), $(eval BUILD_TARGETS += $(s).build))
 
 # e.g. RUN_TARGETS=phil.run/1.input phil.run/2.input greg.run/1.input greg.run/2.input
-$(foreach s, $(STUDENTS), $(foreach i, $(wildcard $(EXPECTED)/*.input), \
+$(foreach s, $(STUDENTS), $(foreach i, $(wildcard $(TESTS_DIR)/*.input), \
 	$(eval RUN_TARGETS += $(s)/$(notdir $(i)).run)))
 
 # e.g. DIFF_TARGETS=phil.diff/1.input phil.diff/2.input greg.diff/1.input greg.diff/2.input
-$(foreach s, $(STUDENTS), $(foreach i, $(wildcard $(EXPECTED)/*.input), \
+$(foreach s, $(STUDENTS), $(foreach i, $(wildcard $(TESTS_DIR)/*.input), \
 	$(eval DIFF_TARGETS += $(s)/$(notdir $(i)).diff)))
 
 .ONESHELL: # make cd work
@@ -82,7 +82,7 @@ $(RUN_TARGETS):
 	$(eval student = $(subst /,,$(dir $(norun))))
 	cd $(PROJ_DIR)/$(student)
 	$(eval input_file = $(notdir $(norun)))
-	$(eval params = $(file < $(EXPECTED)/$(input_file)))
+	$(eval params = $(file < $(TESTS_DIR)/$(input_file)))
 	$(eval test_case = $(basename $(input_file)))
 	echo "run: "$(student)" with params: "$(params) | tee -a $(LOG)
 
@@ -92,7 +92,7 @@ $(RUN_TARGETS):
 		echo "no executable" | tee -a $(LOG)
 	fi
 
-# This target runs diff on each .actual result to compare it with the .expected file in expected/$(PROJECT)
+# This target runs diff on each .actual result to compare it with the .expected file in $(TESTS_DIR)
 $(DIFF_TARGETS):
 	$(eval nodiff = $(subst .diff,,$@))
 	$(eval student = $(subst /,,$(dir $(nodiff))))
@@ -101,7 +101,7 @@ $(DIFF_TARGETS):
 	echo -n "diff: "$(student)" expected vs "$(test_case).actual | tee -a $(LOG)
 
 	if [ -f $(test_case).actual ]; then
-		diff -s $(test_case).actual $(EXPECTED)/$(test_case).expected >>$(LOG)
+		diff -s $(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG)
 		if [ $$? -eq 0 ]; then
 			echo ": pass!" | tee -a $(LOG)
 		else

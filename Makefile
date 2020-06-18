@@ -17,17 +17,14 @@ ifndef $(ORG)
 	ORG = cs315-20s
 endif
 
-ifndef $(LOG)
-	LOG := $(PWD)/$(PROJECT).log
-endif
-
 ifndef $(EXECUTABLE)
 	EXECUTABLE = nt # TODO: need an abstraction. maybe EXECUTABLE should be the project name?
 endif
 
 # Build a directory hierarchy, e.g. output/cs315-20s/project03/phpeterson-usf
-EXPECTED = $(PWD)/expected/$(PROJECT)/
-PROJ_DIR = output/$(ORG)/$(PROJECT)
+EXPECTED := $(PWD)/expected/$(PROJECT)/
+PROJ_DIR := $(PWD)/output/$(ORG)/$(PROJECT)
+LOG := $(PROJ_DIR)/$(PROJECT).log
 
 # Set up these make targets for the clone, build, and test phase
 # My approach relies on these kludgey names to generate unique targets
@@ -64,7 +61,7 @@ $(CLONE_TARGETS):
 	echo "clone: "$(student) | tee -a $(LOG)
 
 	if [ ! -d $(student) ]; then
-		git clone --quiet https://github.com/$(ORG)/$(PROJECT)-$(student) $(student)
+		git clone https://github.com/$(ORG)/$(PROJECT)-$(student) $(student) 2>>$(LOG)
 	fi
 
 # This target makes each of the student projects
@@ -76,7 +73,7 @@ $(BUILD_TARGETS):
 	if [ -f Makefile ]; then
 		make 1>>$(LOG) 2>>$(LOG)
 	else
-		gcc -o $(EXECUTABLE) nt.c 1>>$(LOG) 2>>$(LOG) # assumption if no Makefile
+		gcc -o $(EXECUTABLE) nt.c 1>>$(LOG) 2>>$(LOG) # TODO: what if no Makefile
 	fi
 
 # This target runs the student's executable once for each test case, generating a .actual file
@@ -84,15 +81,15 @@ $(RUN_TARGETS):
 	$(eval norun = $(subst .run,,$@))
 	$(eval student = $(subst /,,$(dir $(norun))))
 	cd $(PROJ_DIR)/$(student)
-	$(eval infile = $(notdir $(norun)))
-	$(eval params = $(file < $(EXPECTED)/$(infile)))
-	$(eval testnum = $(basename $(infile)))
+	$(eval input_file = $(notdir $(norun)))
+	$(eval params = $(file < $(EXPECTED)/$(input_file)))
+	$(eval test_case = $(basename $(input_file)))
 	echo "run: "$(student)" with params: "$(params) | tee -a $(LOG)
 
 	if [ -x $(EXECUTABLE) ]; then
-		./$(EXECUTABLE) $(params) > ./$(testnum).actual
+		./$(EXECUTABLE) $(params) > ./$(test_case).actual
 	else
-		echo "no executable"
+		echo "no executable" | tee -a $(LOG)
 	fi
 
 # This target runs diff on each .actual result to compare it with the .expected file in expected/$(PROJECT)
@@ -100,17 +97,16 @@ $(DIFF_TARGETS):
 	$(eval nodiff = $(subst .diff,,$@))
 	$(eval student = $(subst /,,$(dir $(nodiff))))
 	cd $(PROJ_DIR)/$(student)
-	$(eval testnum = $(basename $(notdir $(nodiff))))
-	$(eval actual = $(testnum).actual)
-	echo -n "diff: "$(student)" expected vs "$(actual)
+	$(eval test_case = $(basename $(notdir $(nodiff))))
+	echo -n "diff: "$(student)" expected vs "$(test_case).actual | tee -a $(LOG)
 
-	if [ -f $(actual) ]; then
-		diff -s $(actual) $(EXPECTED)/$(testnum).expected >>$(LOG)
+	if [ -f $(test_case).actual ]; then
+		diff -s $(test_case).actual $(EXPECTED)/$(test_case).expected >>$(LOG)
 		if [ $$? -eq 0 ]; then
-			echo ": pass!"
+			echo ": pass!" | tee -a $(LOG)
 		else
-			echo ": fail"
+			echo ": fail" | tee -a $(LOG)
 		fi
 	else
-		echo ": no actual"
+		echo ": no actual" | tee -a $(LOG)
 	fi

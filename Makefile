@@ -32,9 +32,6 @@ ifndef MODE
 	# In student mode, we only need one directory
 	MODE = student
 	DIRECTORIES = $(DIR)
-else
-	# In teacher mode, we loop over all the repos in $(PROJ_DIR)
-	MODE = teacher
 endif
 
 # Set up these make targets for the clone, build, and test phase

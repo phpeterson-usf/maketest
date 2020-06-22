@@ -50,9 +50,11 @@ DIFF_SUFFIX = __diff__
 $(foreach d, $(DIRECTORIES), $(foreach i, $(wildcard $(TESTS_DIR)/*.input), \
 	$(eval DIFF_TARGETS += $(d)/$(notdir $(i))$(DIFF_SUFFIX))))
 
+SCORE_SUFFIX = __score__
+$(foreach d, $(DIRECTORIES), $(eval SCORE_TARGETS += $(d)/$(SCORE_SUFFIX)))
 
 # Set up different targets for student mode vs. teacher mode
-STUDENT_TARGETS = $(BUILD_TARGETS) $(RUN_TARGETS) $(DIFF_TARGETS)
+STUDENT_TARGETS = $(BUILD_TARGETS) $(RUN_TARGETS) $(DIFF_TARGETS) $(SCORE_TARGETS)
 ifneq ($(MODE), teacher)
 	# In student mode, we run and test a single preexisting directory 
 	MODE_TARGETS = $(STUDENT_TARGETS)
@@ -65,8 +67,15 @@ endif
 
 all: $(MODE_TARGETS)
 
+# Clean just removes the artifact files
+# If you want to remove the repo/s you can do that yourself
 clean:
-	rm -rf $(GITHUB)
+ifeq ($(MODE), student)
+	rm -rf $(DIR)/*.actual $(DIR)/$(PROJECT).score
+else
+	$(shell find . -name *.actual -exec rm {} \;)
+	$(shell find . -name *.score -exec rm {} \;)
+endif
 	rm -rf *.log
 
 # This target runs the clone out of github classroom using its URL format
@@ -112,13 +121,32 @@ $(DIFF_TARGETS):
 	$(eval test_case = $(basename $(notdir $(nodiff))))
 	echo -n "diff: "$(repo_dir)" test case "$(test_case)": " | tee -a $(LOG)
 
+	$(eval rubric_file = $(TESTS_DIR)/$(test_case).rubric)
+	if [ ! -f $(rubric_file) ]; then
+		echo "no rubric file" | tee -a $(LOG)
+	fi
+	$(eval score_file = $(repo_dir)/$(PROJECT).score)
+
 	if [ -f $(repo_dir)/$(test_case).actual ]; then
 		diff -s $(repo_dir)/$(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG)
 		if [ $$? -eq 0 ]; then
 			echo "pass!" | tee -a $(LOG)
+			$(eval rubric = $(file < $(rubric_file)))
+			echo -n " + "$(rubric) >> $(score_file) | tee -a $(LOG)
 		else
 			echo "fail" | tee -a $(LOG)
+			echo -n " + 0" >> $(score_file) | tee -a $(LOG)
 		fi
 	else
 		echo "no actual" | tee -a $(LOG)
+		echo -n " + 0" >> $(score_file) | tee -a $(LOG)
 	fi
+
+# This target runs shell expr to add up the accumulated rubric scores for each test case
+$(SCORE_TARGETS):
+	$(eval repo_dir = $(subst $(SCORE_SUFFIX),,$@))
+	echo -n "score: "$(repo_dir)" " | tee -a $(LOG)
+
+	$(eval score_file = $(repo_dir)/$(PROJECT).score)
+	$(eval scores = $(file < $(score_file)))
+	echo $(shell expr $(scores)) | tee -a $(LOG)

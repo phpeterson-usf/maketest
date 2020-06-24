@@ -78,11 +78,15 @@ else
 endif
 	rm -rf *.log
 
+# Convenience functions encapsulate the tee
+echo_t = echo $(1) | tee -a $(LOG)
+echo_nt = echo -n $(1) | tee -a $(LOG)
+
 # This target runs the clone out of github classroom using its URL format
 $(CLONE_TARGETS):
 	$(eval repo_path = $(subst $(CLONE_SUFFIX),,$@))
 	$(eval repo_dir = $(PWD)/$(repo_path))
-	@echo "clone: "$(repo_path) | tee -a $(LOG)
+	$(call echo_t, "clone: "$(repo_path))
 
 	if [ ! -d $(repo_dir) ]; then
 		git clone https://$(repo_path) $(repo_dir) 2>>$(LOG)
@@ -91,7 +95,7 @@ $(CLONE_TARGETS):
 # This target makes each of the student projects
 $(BUILD_TARGETS):
 	$(eval repo_dir = $(subst $(BUILD_SUFFIX),,$@))
-	echo "build: "$(repo_dir) | tee -a $(LOG)
+	$(call echo_t, "build: "$(repo_dir))
 
 	if [ -f $(repo_dir)/Makefile ]; then
 		make -C $(repo_dir) 1>>$(LOG) 2>>$(LOG)
@@ -106,12 +110,12 @@ $(RUN_TARGETS):
 	$(eval input_file = $(notdir $(norun)))
 	$(eval params = $(file < $(TESTS_DIR)/$(input_file)))
 	$(eval test_case = $(basename $(input_file)))
-	echo "  run: "$(repo_dir)" with params: "$(params) | tee -a $(LOG)
+	$(call echo_t, "  run: "$(repo_dir)" with params: "$(params))
 
 	if [ -x $(repo_dir)/$(EXECUTABLE) ]; then
 		$(repo_dir)/$(EXECUTABLE) $(params) > $(repo_dir)/$(test_case).actual
 	else
-		echo "no executable" | tee -a $(LOG)
+		$(call echo_t, "no executable")
 	fi
 
 # This target runs diff on each .actual result to compare it with the .expected file in $(TESTS_DIR)
@@ -119,34 +123,34 @@ $(DIFF_TARGETS):
 	$(eval nodiff = $(subst $(DIFF_SUFFIX),,$@))
 	$(eval repo_dir = $(dir $(nodiff)))
 	$(eval test_case = $(basename $(notdir $(nodiff))))
-	echo -n " diff: "$(repo_dir)" test case "$(test_case)": " | tee -a $(LOG)
+	$(call echo_nt, " diff: "$(repo_dir)" test case "$(test_case)": ")
 
 	$(eval rubric_file = $(TESTS_DIR)/$(test_case).rubric)
 	if [ ! -f $(rubric_file) ]; then
-		echo "no rubric file" | tee -a $(LOG)
+		$(call echo_t, "no rubric file")
 	fi
 	$(eval score_file = $(repo_dir)/$(PROJECT).score)
 
 	if [ -f $(repo_dir)/$(test_case).actual ]; then
 		diff -s $(repo_dir)/$(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG)
 		if [ $$? -eq 0 ]; then
-			echo "pass!" | tee -a $(LOG)
+			$(call echo_t, "pass!")
 			$(eval rubric = $(file < $(rubric_file)))
-			echo -n " + "$(rubric) >> $(score_file) | tee -a $(LOG)
+			$(call echo_nt, " + "$(rubric) >> $(score_file))
 		else
-			echo "fail" | tee -a $(LOG)
-			echo -n " + 0" >> $(score_file) | tee -a $(LOG)
+			$(call echo_t, "fail")
+			$(call echo_nt, " + 0" >> $(score_file))
 		fi
 	else
-		echo "no actual" | tee -a $(LOG)
-		echo -n " + 0" >> $(score_file) | tee -a $(LOG)
+		$(call echo_t, "no actual")
+		$(call echo_nt, " + 0" >> $(score_file))
 	fi
 
 # This target runs shell expr to add up the accumulated rubric scores for each test case
 $(SCORE_TARGETS):
 	$(eval repo_dir = $(subst $(SCORE_SUFFIX),,$@))
-	echo -n "score: "$(repo_dir)" " | tee -a $(LOG)
+	$(call echo_nt, "score: "$(repo_dir)" ")
 
 	$(eval score_file = $(repo_dir)/$(PROJECT).score)
 	$(eval scores = $(file < $(score_file)))
-	echo $(shell expr $(scores)) | tee -a $(LOG)
+	$(call echo_t, $(shell expr $(scores)))

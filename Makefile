@@ -19,7 +19,7 @@ ifndef $(ORG)
 endif
 
 ifndef $(EXECUTABLE)
-	EXECUTABLE = nt # TODO: need an abstraction. maybe EXECUTABLE should be the project name?
+	EXECUTABLE = $(PROJECT)
 endif
 
 TESTS_DIR = $(PWD)/tests/$(PROJECT)
@@ -106,7 +106,7 @@ $(RUN_TARGETS):
 	$(eval input_file = $(notdir $(norun)))
 	$(eval params = $(file < $(TESTS_DIR)/$(input_file)))
 	$(eval test_case = $(basename $(input_file)))
-	echo "run: "$(repo_dir)" with params: "$(params) | tee -a $(LOG)
+	echo "  run: "$(repo_dir)" with params: "$(params) | tee -a $(LOG)
 
 	if [ -x $(repo_dir)/$(EXECUTABLE) ]; then
 		$(repo_dir)/$(EXECUTABLE) $(params) > $(repo_dir)/$(test_case).actual
@@ -119,7 +119,7 @@ $(DIFF_TARGETS):
 	$(eval nodiff = $(subst $(DIFF_SUFFIX),,$@))
 	$(eval repo_dir = $(dir $(nodiff)))
 	$(eval test_case = $(basename $(notdir $(nodiff))))
-	echo -n "diff: "$(repo_dir)" test case "$(test_case)": " | tee -a $(LOG)
+	echo -n " diff: "$(repo_dir)" test case "$(test_case)": " | tee -a $(LOG)
 
 	$(eval rubric_file = $(TESTS_DIR)/$(test_case).rubric)
 	if [ ! -f $(rubric_file) ]; then

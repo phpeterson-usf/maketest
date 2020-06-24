@@ -1,7 +1,6 @@
 # maketest -- This Makefile can pull, build, and test projects from GitHub Classroom
 #             Relies heavily on extensions in GNU make 4.2 and later
 
-
 # Allow STUDENTS, PROJECT, and ORG to be specified on the command line, e.g.
 # make STUDENTS="ankitakhatri chelseaxkaye" PROJECT=project03
 # These names must match what you set up in GitHub Classroom
@@ -26,11 +25,10 @@ TESTS_DIR = $(PWD)/tests/$(PROJECT)
 LOG = $(PWD)/$(PROJECT).log
 GITHUB = github.com
 
-# Allow DIRECTORIES to be overridden by MODE=student below. It's here for an arcane make syntax reason
+# Allow DIRECTORIES to be overridden by DIR below. It's here for an arcane make syntax reason
 $(foreach s, $(STUDENTS), $(eval DIRECTORIES += $(GITHUB)/$(ORG)/$(PROJECT)-$(s)))
-ifndef MODE
-	# In student mode, we only need one directory
-	MODE = student
+ifdef DIR
+	# To test one student's project, we only need one directory
 	DIRECTORIES = $(DIR)
 endif
 
@@ -53,24 +51,17 @@ $(foreach d, $(DIRECTORIES), $(foreach i, $(wildcard $(TESTS_DIR)/*.input), \
 SCORE_SUFFIX = __score__
 $(foreach d, $(DIRECTORIES), $(eval SCORE_TARGETS += $(d)/$(SCORE_SUFFIX)))
 
-# Set up different targets for student mode vs. teacher mode
-STUDENT_TARGETS = $(BUILD_TARGETS) $(RUN_TARGETS) $(DIFF_TARGETS) $(SCORE_TARGETS)
-ifneq ($(MODE), teacher)
-	# In student mode, we run and test a single preexisting directory 
-	MODE_TARGETS = $(STUDENT_TARGETS)
-else
-	# In teacher mode, we clone all the repos, and run and test them all
-	MODE_TARGETS = $(CLONE_TARGETS) $(STUDENT_TARGETS)
-endif
+TEST_TARGETS = $(BUILD_TARGETS) $(RUN_TARGETS) $(DIFF_TARGETS) $(SCORE_TARGETS)
 
-.ONESHELL:  # grumble
+.ONESHELL:  # TODO: Find out why the makefile is so sensitive to this being right here
 
-all: $(MODE_TARGETS)
+test: $(TEST_TARGETS)
+clone: $(CLONE_TARGETS)
 
 # Clean just removes the artifact files
 # If you want to remove the repo/s you can do that yourself
 clean:
-ifeq ($(MODE), student)
+ifdef DIR
 	rm -rf $(DIR)/*.actual $(DIR)/$(PROJECT).score
 else
 	$(shell find . -name *.actual -exec rm {} \;)

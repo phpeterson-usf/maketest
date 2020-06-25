@@ -15,8 +15,6 @@ but I haven't tested `maketest` on macOS
 
 ## Usage 
 1. You'll want to use the `make` flags `-s` (silent) and `-k` (keep going past errors)
-2. There is a a `clean` target which removes the `.actual`, `.score`, and `.log` files. You'll
-want to use the `clean` target between test runs to get the correct score.
 
 ### Usage for Students
 1. If your project is in `/home/pi/project02-phpeterson` you can test it by saying (from the 

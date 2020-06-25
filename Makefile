@@ -37,6 +37,9 @@ endif
 CLONE_SUFFIX = __clone__
 $(foreach d, $(DIRECTORIES), $(eval CLONE_TARGETS += $(d)/$(CLONE_SUFFIX)))
 
+CLEAN_SUFFIX = __clean__
+$(foreach d, $(DIRECTORIES), $(eval CLEAN_TARGETS += $(d)/$(CLEAN_SUFFIX)))
+
 BUILD_SUFFIX = __build__
 $(foreach d, $(DIRECTORIES), $(eval BUILD_TARGETS += $(d)/$(BUILD_SUFFIX)))
 
@@ -51,23 +54,12 @@ $(foreach d, $(DIRECTORIES), $(foreach i, $(wildcard $(TESTS_DIR)/*.input), \
 SCORE_SUFFIX = __score__
 $(foreach d, $(DIRECTORIES), $(eval SCORE_TARGETS += $(d)/$(SCORE_SUFFIX)))
 
-TEST_TARGETS = $(BUILD_TARGETS) $(RUN_TARGETS) $(DIFF_TARGETS) $(SCORE_TARGETS)
+TEST_TARGETS = $(CLEAN_TARGETS) $(BUILD_TARGETS) $(RUN_TARGETS) $(DIFF_TARGETS) $(SCORE_TARGETS)
 
 .ONESHELL:  # TODO: Find out why the makefile is so sensitive to this being right here
 
 test: $(TEST_TARGETS)
 clone: $(CLONE_TARGETS)
-
-# Clean just removes the artifact files
-# If you want to remove the repo/s you can do that yourself
-clean:
-ifdef DIR
-	rm -rf $(DIR)/*.actual $(DIR)/$(PROJECT).score
-else
-	$(shell find . -name *.actual -exec rm {} \;)
-	$(shell find . -name *.score -exec rm {} \;)
-endif
-	rm -rf *.log
 
 # Convenience functions encapsulate the tee
 echo_t = echo $(1) | tee -a $(LOG)
@@ -82,6 +74,13 @@ $(CLONE_TARGETS):
 	if [ ! -d $(repo_dir) ]; then
 		git clone https://$(repo_path) $(repo_dir) 2>>$(LOG)
 	fi
+
+# This target removes maketest artifacts to prepare for a test run
+# .actual may not matter much since we overwrite, but .score matters since we append
+$(CLEAN_TARGETS):
+	$(eval repo_path = $(subst $(CLEAN_SUFFIX),,$@))
+	$(eval repo_dir = $(PWD)/$(repo_path))
+	rm $(repo_dir)/*.actual $(repo_dir)/*.score
 
 # This target makes each of the student projects
 $(BUILD_TARGETS):

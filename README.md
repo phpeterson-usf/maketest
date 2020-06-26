@@ -62,6 +62,6 @@ and the sum of the scores is reported in `maketest` output
 1. `maketest` is itself a `Makefile` and everything it does is a list of targets
 2. The trick is to build lists of unique target names using the suffixes you can see. 
 That part is a little gnarly, but it  makes the recipes pretty simple
-3. There are variables and recipes for cloning, building, running, and diffing
+3. There are variables and recipes for cloning, building, running, and scoring
 4. There is a log file in `./$(PROJECT).log` with all the gory details. Can be useful for 
 finding bugs, either mine or the students!

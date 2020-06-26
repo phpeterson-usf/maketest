@@ -41,7 +41,9 @@ PULL_SUFFIX = __pull__
 $(foreach d, $(DIRECTORIES), $(eval PULL_TARGETS += $(d)/$(PULL_SUFFIX)))
 
 CLEAN_SUFFIX = __clean__
-$(foreach d, $(DIRECTORIES), $(eval CLEAN_TARGETS += $(d)/$(CLEAN_SUFFIX)))
+$(foreach d, $(DIRECTORIES), $(foreach i, $(wildcard $(TESTS_DIR)/*.input), \
+	$(eval CLEAN_TARGETS += $(d)/$(basename $(notdir $(i))).actual$(CLEAN_SUFFIX))))
+$(foreach d, $(DIRECTORIES), $(eval CLEAN_TARGETS += $(d)/$(PROJECT).score$(CLEAN_SUFFIX)))
 
 BUILD_SUFFIX = __build__
 $(foreach d, $(DIRECTORIES), $(eval BUILD_TARGETS += $(d)/$(BUILD_SUFFIX)))
@@ -50,14 +52,10 @@ RUN_SUFFIX = __run__
 $(foreach d, $(DIRECTORIES), $(foreach i, $(wildcard $(TESTS_DIR)/*.input), \
 	$(eval RUN_TARGETS += $(d)/$(notdir $(i))$(RUN_SUFFIX))))
 
-DIFF_SUFFIX = __diff__
-$(foreach d, $(DIRECTORIES), $(foreach i, $(wildcard $(TESTS_DIR)/*.input), \
-	$(eval DIFF_TARGETS += $(d)/$(notdir $(i))$(DIFF_SUFFIX))))
-
 SCORE_SUFFIX = __score__
 $(foreach d, $(DIRECTORIES), $(eval SCORE_TARGETS += $(d)/$(SCORE_SUFFIX)))
 
-TEST_TARGETS = $(CLEAN_TARGETS) $(BUILD_TARGETS) $(RUN_TARGETS) $(DIFF_TARGETS) $(SCORE_TARGETS)
+TEST_TARGETS = $(CLEAN_TARGETS) $(BUILD_TARGETS) $(RUN_TARGETS) $(SCORE_TARGETS)
 
 .ONESHELL:  # TODO: Find out why the makefile is so sensitive to this being right here
 
@@ -94,9 +92,10 @@ $(PULL_TARGETS):
 # This target removes maketest artifacts to prepare for a test run
 # .actual may not matter much since we overwrite, but .score matters since we append
 $(CLEAN_TARGETS):
-	$(eval repo_path = $(subst $(CLEAN_SUFFIX),,$@))
-	$(eval repo_dir = $(PWD)/$(repo_path))
-	rm $(repo_dir)/*.actual $(repo_dir)/*.score
+	$(eval artifact = $(subst $(CLEAN_SUFFIX),,$@))
+	if [ -f $(artifact) ]; then
+		rm $(artifact)
+	fi
 
 # This target makes each of the student projects
 $(BUILD_TARGETS):
@@ -116,39 +115,39 @@ $(RUN_TARGETS):
 	$(eval input_file = $(notdir $(norun)))
 	$(eval params = $(file < $(TESTS_DIR)/$(input_file)))
 	$(eval test_case = $(basename $(input_file)))
-	$(call echo_t, "  run: "$(repo_dir)" with params: "$(params))
+	$(call echo_nt, "  run: "$(repo_dir)" ")
 
 	if [ -x $(repo_dir)/$(EXECUTABLE) ]; then
 		$(repo_dir)/$(EXECUTABLE) $(params) > $(repo_dir)/$(test_case).actual
-	else
-		$(call echo_t, "no executable")
-	fi
 
-# This target runs diff on each .actual result to compare it with the .expected file in $(TESTS_DIR)
-$(DIFF_TARGETS):
-	$(eval nodiff = $(subst $(DIFF_SUFFIX),,$@))
-	$(eval repo_dir = $(dir $(nodiff)))
-	$(eval test_case = $(basename $(notdir $(nodiff))))
-	$(call echo_nt, " diff: "$(repo_dir)" test case "$(test_case)": ")
+		$(eval rubric_file = $(TESTS_DIR)/$(test_case).rubric)
+		if [ ! -f $(rubric_file) ]; then
+			# Teacher needs to provide a rubric
+			$(call echo_t, "no rubric file")
+		fi
+		$(eval score_file = $(repo_dir)/$(PROJECT).score)
 
-	$(eval rubric_file = $(TESTS_DIR)/$(test_case).rubric)
-	if [ ! -f $(rubric_file) ]; then
-		$(call echo_t, "no rubric file")
-	fi
-	$(eval score_file = $(repo_dir)/$(PROJECT).score)
-
-	if [ -f $(repo_dir)/$(test_case).actual ]; then
-		diff -s $(repo_dir)/$(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG)
-		if [ $$? -eq 0 ]; then
-			$(call echo_t, "pass!")
-			$(eval rubric = $(file < $(rubric_file)))
-			$(call echo_nt, " + "$(rubric) >> $(score_file))
+		if [ -f $(repo_dir)/$(test_case).actual ]; then
+			diff -s $(repo_dir)/$(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG)
+			if [ $$? -eq 0 ]; then
+				# .actual == .expected
+				$(call echo_nt, "PASS")
+				$(eval rubric = $(file < $(rubric_file)))
+				$(call echo_nt, " + "$(rubric) >> $(score_file))
+			else
+				# .actual != .expected
+				$(call echo_nt, "FAIL")
+				$(call echo_nt, " + 0" >> $(score_file))
+			fi
 		else
-			$(call echo_t, "fail")
+			# Program ran but no .actual. Seg fault?
+			$(call echo_t, "no actual")
 			$(call echo_nt, " + 0" >> $(score_file))
 		fi
+		$(call echo_t, " for: "$(params))
 	else
-		$(call echo_t, "no actual")
+		# Program didn't build
+		$(call echo_t, "no executable")
 		$(call echo_nt, " + 0" >> $(score_file))
 	fi
 

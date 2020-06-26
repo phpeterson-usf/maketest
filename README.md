@@ -6,10 +6,10 @@ and score the results vs. your rubric
 
 ## Requirements
 1. Student projects must be callable from the command line, and print their results to `stdout`
-2. Student executables must have the same name as the `PROJECT` (see below)
-2. If written in C, your projects must take input via `argc` and `argv`, not via `stdin`. 
-Could be enhanced to do this if needed.
-3. You must use GNU make 4.2 or later. This is current on Raspberry Pi OS, but macOS installs 
+1. Student projects must have a `Makefile` to build them
+1. The `Makefile` must generate an executable with the same name as the `PROJECT` (see below)
+1. If written in C, your projects must take input via `argc` and `argv`, not via `stdin`
+1. You must use GNU make 4.2 or later. This is current on Raspberry Pi OS, but macOS installs 
 make 3.6 by default. If you're running this on macOS, you might need to `brew install make` 
 but I haven't tested `maketest` on macOS
 
@@ -27,31 +27,33 @@ and score vs. rubric
 ### Usage for Teachers
 1. `maketest` expects to find `make` variables for `ORG`, `PROJECT`, and `STUDENTS` as they are 
 shown in GitHub Classroom. You can specify these on the command line 
-(e.g. `make clone -s -k ORG=cs315-20s PROJECT=project02 STUDENTS="phil greg"`), or change 
+(e.g. `make `**`test`**` -s -k ORG=cs315-20s PROJECT=project02 STUDENTS="phil greg"`), or change 
 the `Makefile` by hand
-2. For the `clone` target, `maketest` will clone all of the student repos before building, 
-running, and testing them
+2. `make `**`clone`**` -s -k ORG=cs315-20s PROJECT=project02 STUDENTS="phil greg"` will invoke 
+`git clone` for each student, directories under in `./github.com/$(ORG)`
 3. To clone the repos, you must be authenticated to GitHub as a teacher for the GitHub Classroom 
 Organization
-4. The first/default `make` target is `test` so `make -s -k PROJECT=project02` is equivalent to 
-`make test -s -k PROJECT=project02`
+4. `make `**`pull`**` -s -k ORG=cs315-20s PROJECT=project02 STUDENTS="phil greg"` will invoke `git pull` 
+for each student repo
+5. The first/default `make` target is `test` so `make -s -k` is equivalent to 
+`make `**`test`**` -s -k` (assuming `ORG`, `PROJECT` and `STUDENTS` are defined in the `Makefile` for less typing)
 
 ## Testing and Scoring
+1. The `.actual` and `.score` artifacts described below are deleted every time you make the 
+`test` target
 
 ### Test Case Library
-1. `tests/` contains a directory for each `PROJECT`
-2. Test cases are given by a `.input` file and a `.expected` file
-3. Each test case has a prefix linking the input to the expected output. For example, the output 
-from `1.input` will be checked against `1.expected`. You must use the same prefix on the input 
-and expected files.
-4. The `Makefile` feeds the contents of each of the `.input` files to each student's executable, 
+1. `./tests/` contains a directory for each `PROJECT`
+2. Test cases are given by a `.input` file and a `.expected` file with the same prefix
+3. For example, the output from `1.input` will be checked against `1.expected`
+4. `maketest` feeds the contents of each `.input` file to each student's executable, 
 and records the output in a `.actual` file in the student's directory. So `1.input` generates 
-`1.actual` and `1.actual` is diff'd against `1.expected`
-5. Fow now we're using `diff` so the output has to really match. 
-Something more flexible would be a good enhancement.
+`1.actual`, which is diff'd against `1.expected`
+5. Fow now we're using `diff` so the output has to really match. Something more flexible 
+would be a good enhancement.
 
 ### Score vs. Rubric
-1. `tests/$(PROJECT)` can contain a `.rubric` file for each test case
+1. `./tests/$(PROJECT)` can contain a `.rubric` file for each test case
 2. If a student's project passes a test case (i.e. `1.actual` matches `1.expected`) then the 
 contents of `1.rubric` are accumulated into `$(PROJECT).score` in each student's directory, 
 and the sum of the scores is reported in `maketest` output

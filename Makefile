@@ -37,6 +37,9 @@ endif
 CLONE_SUFFIX = __clone__
 $(foreach d, $(DIRECTORIES), $(eval CLONE_TARGETS += $(d)/$(CLONE_SUFFIX)))
 
+PULL_SUFFIX = __pull__
+$(foreach d, $(DIRECTORIES), $(eval PULL_TARGETS += $(d)/$(PULL_SUFFIX)))
+
 CLEAN_SUFFIX = __clean__
 $(foreach d, $(DIRECTORIES), $(eval CLEAN_TARGETS += $(d)/$(CLEAN_SUFFIX)))
 
@@ -60,6 +63,7 @@ TEST_TARGETS = $(CLEAN_TARGETS) $(BUILD_TARGETS) $(RUN_TARGETS) $(DIFF_TARGETS) 
 
 test: $(TEST_TARGETS)
 clone: $(CLONE_TARGETS)
+pull: $(PULL_TARGETS)
 
 # Convenience functions encapsulate the tee
 echo_t = echo $(1) | tee -a $(LOG)
@@ -73,6 +77,18 @@ $(CLONE_TARGETS):
 
 	if [ ! -d $(repo_dir) ]; then
 		git clone https://$(repo_path) $(repo_dir) 2>>$(LOG)
+	fi
+
+# This target runs git pull on each of the student repos
+$(PULL_TARGETS):
+	$(eval repo_path = $(subst $(PULL_SUFFIX),,$@))
+	$(eval repo_dir = $(PWD)/$(repo_path))
+	$(call echo_t, " pull: "$(repo_path))
+
+	if [ -d $(repo_dir) ]; then
+		git -C $(repo_dir) pull 1>> $(LOG) 2>>$(LOG)
+	else
+		$(call echo_t, "no repo: "$(repo_dir))
 	fi
 
 # This target removes maketest artifacts to prepare for a test run

@@ -1,8 +1,8 @@
 # maketest
 1. Automated testing for command-line projects in GitHub Classroom
-2. `maketest` can clone repos, build them, run with predetermined input and output, 
+1. `maketest` can clone repos, build them, run with predetermined input and output, 
 and score the results vs. your rubric
-3. To get started, clone `maketest` onto your machine and `cd` into it
+1. To get started, clone `maketest` onto your machine and `cd` into it
 
 ## Requirements
 1. Student projects must be callable from the command line, and print their results to `stdout`
@@ -14,54 +14,73 @@ make 3.6 by default. If you're running this on macOS, you might need to `brew in
 but I haven't tested `maketest` on macOS
 
 ## Usage 
-1. You'll want to use the `make` flags `-s` (silent) and `-k` (keep going past errors)
+
+1. Remember to run the `maketest` commands from the `maketest/` directory
+1. You'll want to use the `make` flags `-s` (silent) and `-k` (keep going past errors). You can 
+combine the flags, e.g. `make -ks`
+1. `maketest` expects to find `make` variables for `ORG` and `PROJECT` as they are 
+shown in GitHub Classroom. You can specify these in one of three places, which are all equivalent:
+    1. On the command line
+        <pre><code>make test -ks ORG=cs315-20s PROJECT=project02</code></pre>
+    1. In the `Makefile` by editing the variables manually
+    1. In your shell environment, you can use the `-e` flag to tell `make` to get its variables 
+    from the environment
+        <pre><code>export ORG=cs315-20s PROJECT=project02<br>make -eks</code></pre>
 
 ### Usage for Students
-1. If your project is in `/home/pi/project02-phpeterson` you can test it by saying (from the 
-`maketest` directory) 
-`make -s -k PROJECT=project02 DIR=/home/pi/project02-phpeterson` (replacing `phpeterson` with 
-your GitHub ID)
-2. That will build your project, run it with the given test cases, showing you pass/fail, 
+1. In addition to the `ORG` and `PROJECT` variables, students must define a `DIR` variable
+which contains the local filesystem path to your project, e.g. `/home/pi/project02-phpeterson`
+1. To test your pre-existing repo (without cloning)
+    <pre><code>make -ks PROJECT=project02 DIR=/home/pi/project02-phpeterson</code></pre> 
+1. That will build your project, run it with the given test cases, showing you pass/fail, 
 and score vs. rubric
+1. To test the project with a new/clean repo (as the instructor will), you can run the `clone` 
+and `test` targets
+    <pre><code>make -ks clone test PROJECT=project02 ORG=cs315-20s STUDENTS=phpeterson</code></pre>
 
-### Usage for Teachers
-1. `maketest` expects to find `make` variables for `ORG`, `PROJECT`, and `STUDENTS` as they are 
-shown in GitHub Classroom. You can specify these on the command line 
-(e.g. `make `**`test`**` -s -k ORG=cs315-20s PROJECT=project02 STUDENTS="phil greg"`), or change 
-the `Makefile` by hand
-2. `make `**`clone`**` -s -k ORG=cs315-20s PROJECT=project02 STUDENTS="phil greg"` will invoke 
-`git clone` for each student, directories under in `./github.com/$(ORG)`
-3. To clone the repos, you must be authenticated to GitHub as a teacher for the GitHub Classroom 
-Organization
-4. `make `**`pull`**` -s -k ORG=cs315-20s PROJECT=project02 STUDENTS="phil greg"` will invoke `git pull` 
-for each student repo
-5. The first/default `make` target is `test` so `make -s -k` is equivalent to 
-`make `**`test`**` -s -k` (assuming `ORG`, `PROJECT` and `STUDENTS` are defined in the `Makefile` for less typing)
+### Usage for Instructors
+1. In addition to the `ORG` and `PROJECT` variables, instructors must define `STUDENTS` which 
+contains a list of students' GitHub IDs. You may wish to do that in the `Makefile` or your 
+environment, since the long list is static throughout the school term.
+1. To clone all the student repos, use the `clone` target (assuming your are logged in to 
+GitHub Classroom as a teacher for the Organization)
+    <pre><code>make -ks clone ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"</code></pre> 
+1. To build, run, test, and score the repos, use the `test` target (pro tip: `test` is
+    the default target so you can omit `test` if you like)
+    <pre><code>make -ks test ORG=cs315-20s PROJECT=project02</code></pre>
+1. To pull new changes since you cloned the repos, use the `pull` target
+    <pre><code>make -ks pull ORG=cs315-20s PROJECT=project02</code></pre>
 
 ## Testing and Scoring
-1. The `.actual` and `.score` artifacts described below are deleted every time you make the 
-`test` target
 
-### Test Case Library
+### Automated Testing
 1. `./tests/` contains a directory for each `PROJECT`
-2. Test cases are given by a `.input` file and a `.expected` file with the same prefix
-3. For example, the output from `1.input` will be checked against `1.expected`
-4. `maketest` feeds the contents of each `.input` file to each student's executable, 
+1. Test cases are given by a `.input` file and a `.expected` file with the same prefix
+1. For example, the output from `1.input` will be checked against `1.expected`
+1. `maketest` feeds the contents of each `.input` file to each student's executable, 
 and records the output in a `.actual` file in the student's directory. So `1.input` generates 
 `1.actual`, which is diff'd against `1.expected`
-5. Fow now we're using `diff` so the output has to really match. Something more flexible 
-would be a good enhancement.
+1. Fow now we're using `diff -i` so it's a case-insensitive match
 
 ### Score vs. Rubric
 1. `./tests/$(PROJECT)` can contain a `.rubric` file for each test case
-2. If a student's project passes a test case (i.e. `1.actual` matches `1.expected`) then the 
+1. If a student's project passes a test case (i.e. `1.actual` matches `1.expected`) then the 
 contents of `1.rubric` are accumulated into `$(PROJECT).score` in each student's directory, 
 and the sum of the scores is reported in `maketest` output
 
+### Artifact Files
+1. The `.actual` and `.score` artifacts are removed before the `test` target runs
+1. Students should remove the artifacts before committing, since it's generally bad form
+to commit build artifacts
+    <pre><code>cd /home/pi/project02-phpeterson<br>rm *.actual *.score</code></pre> 
+
 ## How does it work?
 1. `maketest` is itself a `Makefile` and everything it does is a list of targets
-2. The trick is to build lists of unique target names using the suffixes you can see. 
-That part is a little gnarly, but it  makes the recipes pretty simple
-3. There are variables and recipes for cloning, building, running, and scoring
-4. There is a log file in `./$(PROJECT).log` with all the gory details. Can be useful for 
+1. The approach is to build lists of unique target names using a unique suffix for
+each phase (clone, pull, clean, build, run, score)
+1. There is a target for each test case for each phase for each student, so the target lists
+are pretty long
+1. However, since `make` loops over the target lists automatically, the recipes for each phase
+can be relatively simple
+1. There is a log file in `./$(PROJECT).log` with all the gory details. Can be useful for 
 finding bugs, either mine or the students!

@@ -25,7 +25,8 @@ shown in GitHub Classroom. You can specify these in one of three places, which a
     1. In the `Makefile` by editing the variables manually
     1. In your shell environment, you can use the `-e` flag to tell `make` to get its variables 
     from the environment
-        <pre><code>export ORG=cs315-20s PROJECT=project02<br>make -eks</code></pre>
+        <pre><code>export ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"
+        make -eks</code></pre>
 
 ### Usage for Students
 1. In addition to the `ORG` and `PROJECT` variables, students must define a `DIR` variable
@@ -72,7 +73,8 @@ and the sum of the scores is reported in `maketest` output
 1. The `.actual` and `.score` artifacts are removed before the `test` target runs
 1. Students should remove the artifacts before committing, since it's generally bad form
 to commit build artifacts
-    <pre><code>cd /home/pi/project02-phpeterson<br>rm *.actual *.score</code></pre> 
+    <pre><code>cd /home/pi/project02-phpeterson
+    rm *.actual *.score</code></pre> 
 
 ## How does it work?
 1. `maketest` is itself a `Makefile` and everything it does is a list of targets

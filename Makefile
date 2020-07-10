@@ -4,17 +4,16 @@
 # Allow STUDENTS, PROJECT, and ORG to be specified on the command line, e.g.
 # make STUDENTS="ankitakhatri chelseaxkaye" PROJECT=project03
 # These names must match what you set up in GitHub Classroom
-ifndef $(STUDENTS)
-	STUDENTS = ankitakhatri chelseaxkaye chih98 dmoy2 dsamia25 gaokevin1 glatif1 \
-	kai-eiji mushi14 nljones4 phcarbajal pkmohabir1 rakesh-raju ravipat98 serenapang xli149
+ifndef STUDENTS
+$(error STUDENTS is not set)
 endif
 
-ifndef $(PROJECT)
-	PROJECT = project02
+ifndef PROJECT
+$(error PROJECT is not set)
 endif
 
-ifndef $(ORG)
-	ORG = cs315-20s
+ifndef ORG
+$(error ORG is not set)
 endif
 
 ifndef $(EXECUTABLE)
@@ -86,7 +85,7 @@ $(PULL_TARGETS):
 	if [ -d $(repo_dir) ]; then
 		git -C $(repo_dir) pull 1>> $(LOG) 2>>$(LOG)
 	else
-		$(call echo_t, "no repo: "$(repo_dir))
+		$(call echo_t, "no repo")
 	fi
 
 # This target removes maketest artifacts to prepare for a test run
@@ -123,12 +122,12 @@ $(RUN_TARGETS):
 		$(eval rubric_file = $(TESTS_DIR)/$(test_case).rubric)
 		if [ ! -f $(rubric_file) ]; then
 			# Teacher needs to provide a rubric
-			$(call echo_t, "no rubric file")
+			$(call echo_t, "no rubric file for test case "$(test_case))
 		fi
 		$(eval score_file = $(repo_dir)/$(PROJECT).score)
 
 		if [ -f $(repo_dir)/$(test_case).actual ]; then
-			diff -s $(repo_dir)/$(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG)
+			diff -i -s $(repo_dir)/$(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG)
 			if [ $$? -eq 0 ]; then
 				# .actual == .expected
 				$(call echo_nt, "PASS")
@@ -141,13 +140,13 @@ $(RUN_TARGETS):
 			fi
 		else
 			# Program ran but no .actual. Seg fault?
-			$(call echo_t, "no actual")
+			$(call echo_t, "no actual - did the program crash?")
 			$(call echo_nt, " + 0" >> $(score_file))
 		fi
 		$(call echo_t, " for: "$(params))
 	else
 		# Program didn't build
-		$(call echo_t, "no executable")
+		$(call echo_t, "no executable - did the program build?")
 		$(call echo_nt, " + 0" >> $(score_file))
 	fi
 

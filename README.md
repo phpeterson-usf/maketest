@@ -16,28 +16,34 @@ but I haven't tested `maketest` on macOS
 ## Usage 
 
 1. Remember to run the `maketest` commands from the `maketest/` directory
-1. You'll want to use the `make` flags `-s` (silent) and `-k` (keep going past errors). You can 
+1. You may want to use the `make` flags `-s` (silent) and `-k` (keep going past errors). You can
 combine the flags, e.g. `make -ks`
 1. `maketest` expects to find `make` variables for `ORG` and `PROJECT` as they are 
-shown in GitHub Classroom. You can specify these in one of three places, which are all equivalent:
+shown in GitHub Classroom. In this README I use examples from Spring 2020 class but you should
+substitute the `ORG` and `PROJECT` values for your class. You can specify these variables in one
+of three places, based on your preference
     1. On the command line
         <pre><code>make test -ks ORG=cs315-20s PROJECT=project02</code></pre>
     1. In the `Makefile` by editing the variables manually
-    1. In your shell environment, you can use the `-e` flag to tell `make` to get its variables 
+    1. In your shell environment. You can use the `-e` flag to tell `make` to get its variables
     from the environment
-        <pre><code>export ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"
+        <pre><code> export ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"
         make -eks</code></pre>
 
 ### Usage for Students
 1. In addition to the `ORG` and `PROJECT` variables, students must define a `DIR` variable
-which contains the local filesystem path to your project, e.g. `/home/pi/project02-phpeterson`
+which contains the local filesystem path to your project
 1. To test your pre-existing repo (without cloning)
-    <pre><code>make -ks PROJECT=project02 DIR=/home/pi/project02-phpeterson</code></pre> 
-1. That will build your project, run it with the given test cases, showing you pass/fail, 
-and score vs. rubric
+    <pre><code>make -ks PROJECT=project04 DIR=../project04-phpeterson-usf</code></pre>
+1. You should see output which looks like this
+    <pre><code> build: ../project04-phpeterson-usf/
+      run: ../project04-phpeterson-usf/ PASS for: -f quadratic -a 2 4 8 16
+      run: ../project04-phpeterson-usf/ PASS for: -f fib_iter -a 20
+      run: ../project04-phpeterson-usf/ FAIL for: -f find_max -a 2 -4 28 16
+    score: ../project04-phpeterson-usf/ 10</code></pre>
 1. To test the project with a new/clean repo (as the instructor will), you can run the `clone` 
 and `test` targets
-    <pre><code>make -ks clone test PROJECT=project02 ORG=cs315-20s STUDENTS=phpeterson</code></pre>
+    <pre><code>make -ks clone test PROJECT=project04 ORG=cs315-20s STUDENTS=phpeterson-usf</code></pre>
 
 ### Usage for Instructors
 1. In addition to the `ORG` and `PROJECT` variables, instructors must define `STUDENTS` which 
@@ -48,9 +54,9 @@ GitHub Classroom as a teacher for the Organization)
     <pre><code>make -ks clone ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"</code></pre> 
 1. To build, run, test, and score the repos, use the `test` target (pro tip: `test` is
     the default target so you can omit `test` if you like)
-    <pre><code>make -ks test ORG=cs315-20s PROJECT=project02</code></pre>
+    <pre><code>make -ks test ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"</code></pre>
 1. To pull new changes since you cloned the repos, use the `pull` target
-    <pre><code>make -ks pull ORG=cs315-20s PROJECT=project02</code></pre>
+    <pre><code>make -ks pull ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"</code></pre>
 
 ## Testing and Scoring
 
@@ -73,7 +79,7 @@ and the sum of the scores is reported in `maketest` output
 1. The `.actual` and `.score` artifacts are removed before the `test` target runs
 1. Students should remove the artifacts before committing, since it's generally bad form
 to commit build artifacts
-    <pre><code>cd /home/pi/project02-phpeterson
+    <pre><code> cd /home/pi/project02-phpeterson
     rm *.actual *.score</code></pre> 
 
 ## How does it work?

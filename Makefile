@@ -4,8 +4,11 @@
 # Allow STUDENTS, PROJECT, and ORG to be specified on the command line, e.g.
 # make STUDENTS="ankitakhatri chelseaxkaye" PROJECT=project03
 # These names must match what you set up in GitHub Classroom
+
+ifndef DIR
 ifndef STUDENTS
 $(error STUDENTS is not set)
+endif
 endif
 
 ifndef PROJECT
@@ -16,9 +19,7 @@ ifndef ORG
 $(error ORG is not set)
 endif
 
-ifndef $(EXECUTABLE)
-	EXECUTABLE = $(PROJECT)
-endif
+EXECUTABLE = $(PROJECT)
 
 TESTS_DIR = $(PWD)/tests/$(PROJECT)
 LOG = $(PWD)/$(PROJECT).log

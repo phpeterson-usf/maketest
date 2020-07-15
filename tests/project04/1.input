@@ -1,1 +1,1 @@
--f quadratic -a "2 4 8 16"
+-f quadratic -a 2,4,8,16

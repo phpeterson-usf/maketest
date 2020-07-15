@@ -5,6 +5,7 @@
 # make STUDENTS="ankitakhatri chelseaxkaye" PROJECT=project03
 # These names must match what you set up in GitHub Classroom
 
+# STUDENTS is only required if DIR is not defined
 ifndef DIR
 ifndef STUDENTS
 $(error STUDENTS is not set)
@@ -19,8 +20,6 @@ ifndef ORG
 $(error ORG is not set)
 endif
 
-EXECUTABLE = $(PROJECT)
-
 TESTS_DIR = $(PWD)/tests/$(PROJECT)
 LOG = $(PWD)/$(PROJECT).log
 GITHUB = github.com
@@ -28,8 +27,8 @@ GITHUB = github.com
 # Allow DIRECTORIES to be overridden by DIR below. It's here for an arcane make syntax reason
 $(foreach s, $(STUDENTS), $(eval DIRECTORIES += $(GITHUB)/$(ORG)/$(PROJECT)-$(s)))
 ifdef DIR
-	# To test one student's project, we only need one directory
-	DIRECTORIES = $(DIR)
+# To test one student's project, we only need one directory
+DIRECTORIES = $(DIR)
 endif
 
 # Set up these make targets for the clone, build, and test phase
@@ -62,6 +61,7 @@ TEST_TARGETS = $(CLEAN_TARGETS) $(BUILD_TARGETS) $(RUN_TARGETS) $(SCORE_TARGETS)
 test: $(TEST_TARGETS)
 clone: $(CLONE_TARGETS)
 pull: $(PULL_TARGETS)
+clean: $(CLEAN_TARGETS)
 
 # Convenience functions encapsulate the tee
 echo_t = echo $(1) | tee -a $(LOG)
@@ -105,7 +105,7 @@ $(BUILD_TARGETS):
 	if [ -f $(repo_dir)/Makefile ]; then
 		make -C $(repo_dir) 1>>$(LOG) 2>>$(LOG)
 	else
-		gcc -o $(repo_dir)/$(EXECUTABLE) $(repo_dir)/nt.c 1>>$(LOG) 2>>$(LOG) # TODO: what if no Makefile
+		$(call echo_t, "no Makefile")
 	fi
 
 # This target runs the student's executable once for each test case, generating a .actual file
@@ -115,10 +115,11 @@ $(RUN_TARGETS):
 	$(eval input_file = $(notdir $(norun)))
 	$(eval params = $(file < $(TESTS_DIR)/$(input_file)))
 	$(eval test_case = $(basename $(input_file)))
+	$(eval executable = $(repo_dir)/$(PROJECT))
 	$(call echo_nt, "  run: "$(repo_dir)" ")
 
-	if [ -x $(repo_dir)/$(EXECUTABLE) ]; then
-		$(repo_dir)/$(EXECUTABLE) $(params) > $(repo_dir)/$(test_case).actual
+	if [ -x $(executable) ]; then
+		$(executable) $(params) > $(repo_dir)/$(test_case).actual
 
 		$(eval rubric_file = $(TESTS_DIR)/$(test_case).rubric)
 		if [ ! -f $(rubric_file) ]; then

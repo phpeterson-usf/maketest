@@ -37,9 +37,9 @@ which contains the local filesystem path to your project
     <pre><code>make -ks PROJECT=project04 DIR=../project04-phpeterson-usf</code></pre>
 1. You should see output which looks like this
     <pre><code> build: ../project04-phpeterson-usf/
-      run: ../project04-phpeterson-usf/ PASS for: -f quadratic -a 2 4 8 16
+      run: ../project04-phpeterson-usf/ PASS for: -f quadratic -a 2,4,8,16
       run: ../project04-phpeterson-usf/ PASS for: -f fib_iter -a 20
-      run: ../project04-phpeterson-usf/ FAIL for: -f find_max -a 2 -4 28 16
+      run: ../project04-phpeterson-usf/ FAIL for: -f find_max -a 2,-4,28,16
     score: ../project04-phpeterson-usf/ 10</code></pre>
 1. To test the project with a new/clean repo (as the instructor will), you can run the `clone` 
 and `test` targets

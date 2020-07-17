@@ -9,8 +9,8 @@ and score the results vs. your rubric
 1. Student projects must have a `Makefile` to build them
 1. The `Makefile` must generate an executable with the same name as the `PROJECT` (see below)
 1. If written in C, your projects must take input via `argc` and `argv`, not via `stdin`
-1. You must use GNU make 4.2 or later. This is current on Raspberry Pi OS, but macOS installs 
-make 3.6 by default. If you're running this on macOS, you might need to `brew install make` 
+1. You must use GNU `make 4.2` or later. This is current on Raspberry Pi OS, but macOS installs 
+`make` 3.6 by default. If you're running this on macOS, you might need to `brew install make` 
 but I haven't tested `maketest` on macOS
 
 ## Usage 
@@ -19,16 +19,17 @@ but I haven't tested `maketest` on macOS
 1. You may want to use the `make` flags `-s` (silent) and `-k` (keep going past errors). You can
 combine the flags, e.g. `make -ks`
 1. `maketest` expects to find `make` variables for `ORG` and `PROJECT` as they are 
-shown in GitHub Classroom. In this README I use examples from Spring 2020 class but you should
+shown in GitHub Classroom. In this README I use examples from the Spring 2020 class but you should
 substitute the `ORG` and `PROJECT` values for your class. You can specify these variables in one
 of three places, based on your preference
     1. On the command line
         <pre><code>make test -ks ORG=cs315-20s PROJECT=project02</code></pre>
     1. In the `Makefile` by editing the variables manually
+        <pre><code>make test -ks</code></pre>
     1. In your shell environment. You can use the `-e` flag to tell `make` to get its variables
     from the environment
         <pre><code> export ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"
-        make -eks</code></pre>
+        make test -eks</code></pre>
 
 ### Usage for Students
 1. In addition to the `ORG` and `PROJECT` variables, students must define a `DIR` variable
@@ -60,27 +61,30 @@ GitHub Classroom as a teacher for the Organization)
 
 ## Testing and Scoring
 
-### Automated Testing
-1. `./tests/` contains a directory for each `PROJECT`
-1. Test cases are given by a `.input` file and a `.expected` file with the same prefix
-1. For example, the output from `1.input` will be checked against `1.expected`
-1. `maketest` feeds the contents of each `.input` file to each student's executable, 
-and records the output in a `.actual` file in the student's directory. So `1.input` generates 
-`1.actual`, which is diff'd against `1.expected`
-1. Fow now we're using `diff -i` so it's a case-insensitive match
+### For Students
+1. When you run `make test -eks DIR=../project02` (for example), `maketest` will
+run the test cases for your `project02` solution. 
+1. This will generate a `.actual` file and a `.score` file in your directory 
+for each test case. Your output must match the expected output case-insensitively.
+1. The overall project rubric contains some portion for automated testing. The
+automated testing portion of the rubric is the sum of the scores for the test
+cases specified by the instructor.
+1. Since a clean repo does not contain build artifacts (like your `.o` files), 
+you should not commit `.actual` or `.score` files to your repo. You may wish to 
+remove them before committing using `rm *.actual *.score` 
 
-### Score vs. Rubric
-1. `./tests/$(PROJECT)` can contain a `.rubric` file for each test case
-1. If a student's project passes a test case (i.e. `1.actual` matches `1.expected`) then the 
-contents of `1.rubric` are accumulated into `$(PROJECT).score` in each student's directory, 
-and the sum of the scores is reported in `maketest` output
-
-### Artifact Files
-1. The `.actual` and `.score` artifacts are removed before the `test` target runs
-1. Students should remove the artifacts before committing, since it's generally bad form
-to commit build artifacts
-    <pre><code> cd /home/pi/project02-phpeterson
-    rm *.actual *.score</code></pre> 
+### For Instructors
+1. In `maketest/tests/` you should create a directory for each `PROJECT`
+1. In each `PROJECT` directory, you should create test cases. A test case is
+defined by three text files. For test case `foo`, you should create:
+    1. `foo.input` containing the command line arguments (not including the 
+    executable name) you wish to test. The format of the arguments is yours to 
+    decide, but students must parse the format you specify. I'm using `getopt` 
+    style arguments
+        <pre><code>-f quadratic -a 1,2,3,4</code></pre> 
+    1. `foo.expected` containing the output (to `stdout` you expect for `foo.input`
+    1. `foo.rubric` containing the number of points earned when the student's
+    `foo.actual` output matches (via `diff -i`) your `foo.expected`
 
 ## How does it work?
 1. `maketest` is itself a `Makefile` and everything it does is a list of targets

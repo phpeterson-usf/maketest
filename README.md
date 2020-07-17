@@ -9,7 +9,7 @@ and score the results vs. your rubric
 1. Student projects must have a `Makefile` to build them
 1. The `Makefile` must generate an executable with the same name as the `PROJECT` (see below)
 1. If written in C, your projects must take input via `argc` and `argv`, not via `stdin`
-1. You must use GNU `make 4.2` or later. This is current on Raspberry Pi OS, but macOS installs 
+1. You must use GNU `make` 4.2 or later. This is current on Raspberry Pi OS, but macOS installs 
 `make` 3.6 by default. If you're running this on macOS, you might need to `brew install make` 
 but I haven't tested `maketest` on macOS
 
@@ -23,18 +23,18 @@ shown in GitHub Classroom. In this README I use examples from the Spring 2020 cl
 substitute the `ORG` and `PROJECT` values for your class. You can specify these variables in one
 of three places, based on your preference
     1. On the command line
-        <pre><code>make test -ks ORG=cs315-20s PROJECT=project02</code></pre>
+        <pre><code>make -ks test ORG=cs315-20s PROJECT=project02</code></pre>
     1. In the `Makefile` by editing the variables manually
-        <pre><code>make test -ks</code></pre>
-    1. In your shell environment. You can use the `-e` flag to tell `make` to get its variables
+        <pre><code>make -ks test</code></pre>
+    1. In your shell environment (or `.bashrc`). You can use the `-e` flag to tell `make` to get its variables
     from the environment
         <pre><code> export ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"
-        make test -eks</code></pre>
+        make -eks test</code></pre>
 
 ### Usage for Students
 1. In addition to the `ORG` and `PROJECT` variables, students must define a `DIR` variable
 which contains the local filesystem path to your project
-1. To test your pre-existing repo (without cloning)
+1. To test your local repo (without cloning)
     <pre><code>make -ks PROJECT=project04 DIR=../project04-phpeterson-usf</code></pre>
 1. You should see output which looks like this
     <pre><code> build: ../project04-phpeterson-usf/
@@ -62,27 +62,30 @@ GitHub Classroom as a teacher for the Organization)
 ## Testing and Scoring
 
 ### For Students
-1. When you run `make test -eks DIR=../project02` (for example), `maketest` will
-run the test cases for your `project02` solution. 
-1. This will generate a `.actual` file and a `.score` file in your directory 
-for each test case. Your output must match the expected output case-insensitively.
+1. When you run the test cases for your `project02` solution
+    <pre><code>make -ks test PROJECT=project02 DIR=../project02-phpeterson-usf</code></pre>
+    `maketest` will generate a `.actual` file for each test case and one `.score` file in your 
+directory. 
+1. To get credit for passing a test case, your output must match the expected output 
+case-insensitively.
 1. The overall project rubric contains some portion for automated testing. The
-automated testing portion of the rubric is the sum of the scores for the test
-cases specified by the instructor.
+automated testing portion of the rubric is the sum of the scores in the `.score` file
 1. Since a clean repo does not contain build artifacts (like your `.o` files), 
 you should not commit `.actual` or `.score` files to your repo. You may wish to 
-remove them before committing using `rm *.actual *.score` 
+remove them before committing
+    <pre><code>rm *.actual *.score</code></pre> 
+    Alternatively, `maketest` can remove them using the `clean` target
+    <pre><code>make -ks clean PROJECT=project02 DIR=../project02-phpeterson-usf</code></pre>
 
 ### For Instructors
 1. In `maketest/tests/` you should create a directory for each `PROJECT`
 1. In each `PROJECT` directory, you should create test cases. A test case is
 defined by three text files. For test case `foo`, you should create:
     1. `foo.input` containing the command line arguments (not including the 
-    executable name) you wish to test. The format of the arguments is yours to 
-    decide, but students must parse the format you specify. I'm using `getopt` 
-    style arguments
+    executable name) you wish to test. The format of the arguments is up to you,
+    but students must parse the format you specify. I'm using `getopt` style arguments
         <pre><code>-f quadratic -a 1,2,3,4</code></pre> 
-    1. `foo.expected` containing the output (to `stdout` you expect for `foo.input`
+    1. `foo.expected` containing the output you expect for `foo.input`
     1. `foo.rubric` containing the number of points earned when the student's
     `foo.actual` output matches (via `diff -i`) your `foo.expected`
 

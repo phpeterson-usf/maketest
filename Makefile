@@ -132,12 +132,12 @@ $(RUN_TARGETS):
 			diff -i -s $(repo_dir)/$(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG)
 			if [ $$? -eq 0 ]; then
 				# .actual == .expected
-				$(call echo_nt, "PASS")
+				$(call echo_nt, "\e[1;32mPass\e[0m")
 				$(eval rubric = $(file < $(rubric_file)))
 				$(call echo_nt, " + "$(rubric) >> $(score_file))
 			else
 				# .actual != .expected
-				$(call echo_nt, "FAIL")
+				$(call echo_nt, "\e[1;31mFail\e[0m")
 				$(call echo_nt, " + 0" >> $(score_file))
 			fi
 		else

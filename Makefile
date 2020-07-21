@@ -21,11 +21,12 @@ $(error ORG is not set)
 endif
 
 TESTS_DIR = $(PWD)/tests/$(PROJECT)
-LOG = $(PWD)/$(PROJECT).log
-GITHUB = github.com
+LOG_FILE = $(PWD)/$(PROJECT).log
+CSV_FILE = $(PWD)/$(PROJECT).csv
+PROJECT_PATH = github.com/$(ORG)/$(PROJECT)-
 
 # Allow DIRECTORIES to be overridden by DIR below. It's here for an arcane make syntax reason
-$(foreach s, $(STUDENTS), $(eval DIRECTORIES += $(GITHUB)/$(ORG)/$(PROJECT)-$(s)))
+$(foreach s, $(STUDENTS), $(eval DIRECTORIES += $(PROJECT_PATH)$(s)))
 ifdef DIR
 # To test one student's project, we only need one directory
 DIRECTORIES = $(DIR)
@@ -54,7 +55,7 @@ $(foreach d, $(DIRECTORIES), $(foreach i, $(wildcard $(TESTS_DIR)/*.input), \
 SCORE_SUFFIX = __score__
 $(foreach d, $(DIRECTORIES), $(eval SCORE_TARGETS += $(d)/$(SCORE_SUFFIX)))
 
-TEST_TARGETS = $(CLEAN_TARGETS) $(BUILD_TARGETS) $(RUN_TARGETS) $(SCORE_TARGETS)
+TEST_TARGETS = $(CLEAN_TARGETS) $(BUILD_TARGETS) $(RUN_TARGETS) csv_header $(SCORE_TARGETS)
 
 .ONESHELL:  # TODO: Find out why the makefile is so sensitive to this being right here
 
@@ -63,9 +64,12 @@ clone: $(CLONE_TARGETS)
 pull: $(PULL_TARGETS)
 clean: $(CLEAN_TARGETS)
 
+csv_header:
+	echo "GitHub ID,Score" > $(CSV_FILE) # truncate
+
 # Convenience functions encapsulate the tee
-echo_t = echo $(1) | tee -a $(LOG)
-echo_nt = echo -n $(1) | tee -a $(LOG)
+echo_t = echo $(1) | tee -a $(LOG_FILE)
+echo_nt = echo -n $(1) | tee -a $(LOG_FILE)
 
 # This target runs the clone out of github classroom using its URL format
 $(CLONE_TARGETS):
@@ -74,7 +78,7 @@ $(CLONE_TARGETS):
 	$(call echo_t, "clone: "$(repo_path))
 
 	if [ ! -d $(repo_dir) ]; then
-		git clone https://$(repo_path) $(repo_dir) 2>>$(LOG)
+		git clone https://$(repo_path) $(repo_dir) 2>>$(LOG_FILE)
 	fi
 
 # This target runs git pull on each of the student repos
@@ -84,7 +88,7 @@ $(PULL_TARGETS):
 	$(call echo_t, " pull: "$(repo_path))
 
 	if [ -d $(repo_dir) ]; then
-		git -C $(repo_dir) pull 1>> $(LOG) 2>>$(LOG)
+		git -C $(repo_dir) pull 1>> $(LOG) 2>>$(LOG_FILE)
 	else
 		$(call echo_t, "no repo")
 	fi
@@ -103,7 +107,7 @@ $(BUILD_TARGETS):
 	$(call echo_t, "build: "$(repo_dir))
 
 	if [ -f $(repo_dir)/Makefile ]; then
-		make -C $(repo_dir) 1>>$(LOG) 2>>$(LOG)
+		make -C $(repo_dir) 1>>$(LOG_FILE) 2>>$(LOG_FILE)
 	else
 		$(call echo_t, "no Makefile")
 	fi
@@ -129,7 +133,7 @@ $(RUN_TARGETS):
 		$(eval score_file = $(repo_dir)/$(PROJECT).score)
 
 		if [ -f $(repo_dir)/$(test_case).actual ]; then
-			diff -i -s $(repo_dir)/$(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG)
+			diff -i -s $(repo_dir)/$(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG_FILE)
 			if [ $$? -eq 0 ]; then
 				# .actual == .expected
 				$(call echo_nt, "\e[1;32mPass\e[0m")
@@ -158,5 +162,9 @@ $(SCORE_TARGETS):
 	$(call echo_nt, "score: "$(repo_dir)" ")
 
 	$(eval score_file = $(repo_dir)/$(PROJECT).score)
-	$(eval scores = $(file < $(score_file)))
-	$(call echo_t, $(shell expr $(scores)))
+	$(eval score = $(shell expr $(file < $(score_file))))
+	$(call echo_t, $(score))
+
+	$(eval student_dir = $(subst $(PROJECT_PATH),,$(repo_dir)))
+	$(eval student = $(subst /,,$(student_dir)))
+	echo $(student)","$(score) >> $(CSV_FILE) # append

@@ -117,12 +117,14 @@ $(RUN_TARGETS):
 	$(eval norun = $(subst $(RUN_SUFFIX),,$@))
 	$(eval repo_dir = $(dir $(norun)))
 	$(eval input_file = $(notdir $(norun)))
-	$(eval params = $(file < $(TESTS_DIR)/$(input_file)))
+	$(eval params_pre_subst = $(file < $(TESTS_DIR)/$(input_file)))
+	$(eval params = $(subst "$(TESTS_DIR)", $(TESTS_DIR), $(params_pre_subst)))
 	$(eval test_case = $(basename $(input_file)))
 	$(eval executable = $(repo_dir)/$(PROJECT))
 	$(call echo_nt, "  run: "$(repo_dir)" ")
 
 	if [ -x $(executable) ]; then
+		cd $(repo_dir)
 		$(executable) $(params) > $(repo_dir)/$(test_case).actual
 
 		$(eval rubric_file = $(TESTS_DIR)/$(test_case).rubric)
@@ -133,7 +135,14 @@ $(RUN_TARGETS):
 		$(eval score_file = $(repo_dir)/$(PROJECT).score)
 
 		if [ -f $(repo_dir)/$(test_case).actual ]; then
-			diff -i -s $(repo_dir)/$(test_case).actual $(TESTS_DIR)/$(test_case).expected >>$(LOG_FILE)
+			$(eval actual = $(repo_dir)/$(test_case).actual)
+
+			# if actual output is not to stdout, the name of the actual
+			# output file is specified in $(test_cast).altactual
+			$(eval altactual = $(TESTS_DIR)/$(test_case).altactual)
+			[ -f $(altactual) ] && $(eval actual = $(repo_dir)/$(file < $(altactual)))
+
+			diff -i -s $(actual) $(TESTS_DIR)/$(test_case).expected >>$(LOG_FILE)
 			if [ $$? -eq 0 ]; then
 				# .actual == .expected
 				$(call echo_nt, "\e[1;32mPass\e[0m")
@@ -149,7 +158,7 @@ $(RUN_TARGETS):
 			$(call echo_t, "no actual - did the program crash?")
 			$(call echo_nt, " + 0" >> $(score_file))
 		fi
-		$(call echo_t, " for: "$(params))
+		$(call echo_t, " for test case: "$(test_case))
 	else
 		# Program didn't build
 		$(call echo_t, "no executable - did the program build?")

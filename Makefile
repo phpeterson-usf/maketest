@@ -106,6 +106,8 @@ $(BUILD_TARGETS):
 	$(eval repo_dir = $(subst $(BUILD_SUFFIX),,$@))
 	$(call echo_t, "build: "$(repo_dir))
 
+	[ ! -f $(repo_dir)/Makefile ] && cp $(TESTS_DIR)/Makefile $(repo_dir)/Makefile
+
 	if [ -f $(repo_dir)/Makefile ]; then
 		make -C $(repo_dir) 1>>$(LOG_FILE) 2>>$(LOG_FILE)
 	else
@@ -124,7 +126,6 @@ $(RUN_TARGETS):
 	$(call echo_nt, "  run: "$(repo_dir)" ")
 
 	if [ -x $(executable) ]; then
-		cd $(repo_dir)
 		$(executable) $(params) > $(repo_dir)/$(test_case).actual
 
 		$(eval rubric_file = $(TESTS_DIR)/$(test_case).rubric)

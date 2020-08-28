@@ -1,0 +1,8 @@
+# Calculation
+x = 2
+y = 4
+z = ((100 * 2) / 4) + 1
+# Print result
+printstr("z = ")
+printdec(z)
+println()

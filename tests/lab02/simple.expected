@@ -1,0 +1,5 @@
+TK_INTLIT("1")
+TK_PLUS("+")
+TK_INTLIT("2")
+TK_EOL("")
+TK_EOT("")

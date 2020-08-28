@@ -139,8 +139,8 @@ $(RUN_TARGETS):
 
 			# if actual output is not to stdout, the name of the actual
 			# output file is specified in $(test_cast).altactual
-			$(eval altactual = $(TESTS_DIR)/$(test_case).altactual)
-			[ -f $(altactual) ] && $(eval actual = $(repo_dir)/$(file < $(altactual)))
+#			$(eval altactual = $(TESTS_DIR)/$(test_case).altactual)
+#			[ -f $(altactual) ] && $(eval actual = $(repo_dir)/$(file < $(altactual)))
 
 			diff -i -s $(actual) $(TESTS_DIR)/$(test_case).expected >>$(LOG_FILE)
 			if [ $$? -eq 0 ]; then

@@ -5,7 +5,8 @@ and score the results vs. your rubric
 1. To get started, clone `maketest` onto your machine and `cd` into it
 
 ## Requirements
-1. Student projects must be callable from the command line, and print their results to `stdout`
+1. Student projects must be callable from the command line, and write results to `stdout` or
+another file you specify (see `altactual` below)
 1. Student projects must have a `Makefile` to build them
 1. The `Makefile` must generate an executable with the same name as the `PROJECT` (see below)
 1. If written in C, your projects must take input via `argc` and `argv`, not via `stdin`
@@ -58,6 +59,8 @@ GitHub Classroom as a teacher for the Organization)
     <pre><code>make -ks test ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"</code></pre>
 1. To pull new changes since you cloned the repos, use the `pull` target
     <pre><code>make -ks pull ORG=cs315-20s PROJECT=project02 STUDENTS="phpeterson-usf gdbenson"</code></pre>
+1. To checkout changes at a timestamp, use the `checkout` target with a `DATE`
+    <pre><code>make -eks checkout DATE="'main@{2020-08-25 00:00:00}'"</code></pre>
 
 ## Testing and Scoring
 
@@ -66,8 +69,8 @@ GitHub Classroom as a teacher for the Organization)
     <pre><code>make -ks test PROJECT=project02 DIR=../project02-phpeterson-usf</code></pre>
     `maketest` will generate a `.actual` file for each test case and one `.score` file in your 
 directory. 
-1. To get credit for passing a test case, your output must match the expected output 
-case-insensitively.
+1. To get credit for passing a test case, your output must match the expected output. Case and
+whitespace are not significant (it's `diff -b -i`)
 1. The overall project rubric contains some portion for automated testing. The
 automated testing portion of the rubric is the sum of the scores in the `.score` file
 1. Since a clean repo does not contain build artifacts (like your `.o` files), 
@@ -88,6 +91,8 @@ defined by three text files. For test case `foo`, you should create:
     1. `foo.expected` containing the output you expect for `foo.input`
     1. `foo.rubric` containing the number of points earned when the student's
     `foo.actual` output matches (via `diff -i`) your `foo.expected`
+1. If your project writes output to a different file other than `stdout`, you can
+specify that file in the contents of `foo.altactual`
 
 ## How does it work?
 1. `maketest` is itself a `Makefile` and everything it does is a list of targets

@@ -2,7 +2,7 @@
 #             Relies heavily on extensions in GNU make 4.2 and later
 
 # Allow STUDENTS, PROJECT, and ORG to be specified on the command line, e.g.
-# make STUDENTS="ankitakhatri chelseaxkaye" PROJECT=project03
+# make STUDENTS="phpeterson-usf gdbenson" PROJECT=project03
 # These names must match what you set up in GitHub Classroom
 
 # STUDENTS is only required if DIR is not defined
@@ -103,9 +103,9 @@ $(CHECKOUT_TARGETS):
 	$(call echo_t, "checkout: "$(repo_path))
 
 	if [ -d $(repo_path) ]; then
-		cd $(repo_path)
-		git checkout $(DATE) 1>>$(LOG_FILE) 2>>$(LOG_FILE)
-		cd $(ROOT_DIR)
+		git -C $(repo_dir) checkout $(DATE) 1>>$(LOG_FILE) 2>>$(LOG_FILE)
+	else
+		$(call echo_t, "no repo")
 	fi
 
 # This target removes maketest artifacts to prepare for a test run

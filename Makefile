@@ -151,9 +151,14 @@ $(RUN_TARGETS):
 
 		# If the project's output is not on stdout, we use $(test_case).altactual to contain
 		# the name of the output file which will be diff'd against $(test_case).expected 
-		$(eval actual_file = $(repo_dir)/$(test_case).actual)
 		$(eval alt_actual_file = $(TESTS_DIR)/$(test_case).altactual)
-		[ -f $(alt_actual_file) ] && $(eval actual_file = $(repo_dir)/$(file < $(alt_actual_file)))
+		if [ -f $(alt_actual_file) ]; then
+			echo -n "" # ugly workaround for make syntax rules
+			$(eval actual_file = $(repo_dir)/$(file < $(alt_actual_file)))
+		else
+			echo -n ""
+			$(eval actual_file = $(repo_dir)/$(test_case).actual)
+		fi
 
 		if [ -f $(actual_file) ]; then
 			diff -b -i -s $(actual_file) $(TESTS_DIR)/$(test_case).expected >>$(LOG_FILE)

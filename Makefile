@@ -121,13 +121,10 @@ $(BUILD_TARGETS):
 	$(eval repo_dir = $(subst $(BUILD_SUFFIX),,$@))
 	$(call echo_t, "build: "$(repo_dir))
 
-	# Copy in a default Makefile if needed
-	[ ! -f $(repo_dir)/Makefile ] && cp $(TESTS_DIR)/Makefile $(repo_dir)/Makefile
-
-	if [ -f $(repo_dir)/Makefile ]; then
+	if [ -f $(repo_dir)/Makefile ];  then
 		make -C $(repo_dir) 1>>$(LOG_FILE) 2>>$(LOG_FILE)
 	else
-		$(call echo_t, "no Makefile")
+		$(call echo_t, "no makefile")
 	fi
 
 # This target runs the student's executable once for each test case, generating a .actual file
@@ -140,7 +137,7 @@ $(RUN_TARGETS):
 	$(call echo_nt, "  run: "$(repo_dir)" ")
 
 	if [ -x $(executable) ]; then
-		$(executable) $(params) > $(repo_dir)/$(test_case).actual
+		timeout 10s $(executable) $(params) > $(repo_dir)/$(test_case).actual
 
 		$(eval rubric_file = $(TESTS_DIR)/$(test_case).rubric)
 		if [ ! -f $(rubric_file) ]; then

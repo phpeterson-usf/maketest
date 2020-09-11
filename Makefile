@@ -5,12 +5,10 @@
 # make STUDENTS="phpeterson-usf gdbenson" PROJECT=project03
 # These names must match what you set up in GitHub Classroom
 
-PROJECT=lab03
-ORG=USF-CS315-F20
-STUDENTS=Eric-W-Chen dmayna nlpulido hbyhibiki ybsolomon KristampsW LevinWeinstein \
-sophialadwiniec zliu91 meenalak macodd liafbkt secretbetta rjthompson2 \
-hmarconi ChrisChu22 smmadden Evelynmatson aliuzzi khayashi2 eranyoung \
-connorgolden kdcurrie ahmaadidrees lihanglin95 anomalik ymty2425 evanmcarlson brmighell alaapb dizhang26 Tiffanyxk3
+# PROJECT=lab03
+# ORG=USF-CS315-F20
+# STUDENTS=gdbenson \
+# phpeterson-usf
 
 # STUDENTS is only required if DIR is not defined
 ifndef DIR

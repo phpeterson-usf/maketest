@@ -1,0 +1,149 @@
+build: github.com/cs-315-03-20f/lab02-minaabdellatif
+no makefile
+build: github.com/cs-315-03-20f/lab02-jsalvarenga
+build: github.com/cs-315-03-20f/lab02-AndrewRCabezudo
+no makefile
+build: github.com/cs-315-03-20f/lab02-chenxpeng
+build: github.com/cs-315-03-20f/lab02-Jdlc224
+no makefile
+build: github.com/cs-315-03-20f/lab02-fotakis08
+build: github.com/cs-315-03-20f/lab02-mgaldi
+no makefile
+build: github.com/cs-315-03-20f/lab02-jnhamid
+build: github.com/cs-315-03-20f/lab02-alhanson7210
+build: github.com/cs-315-03-20f/lab02-Omnitrix4m3
+build: github.com/cs-315-03-20f/lab02-NotCarbonatedWater
+build: github.com/cs-315-03-20f/lab02-yjin34
+build: github.com/cs-315-03-20f/lab02-Gurjot1Kaur
+build: github.com/cs-315-03-20f/lab02-jenniferlewmunoz
+build: github.com/cs-315-03-20f/lab02-SigSegRee
+build: github.com/cs-315-03-20f/lab02-aemarcovich
+build: github.com/cs-315-03-20f/lab02-summarsh
+build: github.com/cs-315-03-20f/lab02-ctmathews2
+build: github.com/cs-315-03-20f/lab02-jakeols
+build: github.com/cs-315-03-20f/lab02-kaspak
+build: github.com/cs-315-03-20f/lab02-stewp007
+no makefile
+build: github.com/cs-315-03-20f/lab02-apreciado98
+build: github.com/cs-315-03-20f/lab02-jwraffety
+no makefile
+build: github.com/cs-315-03-20f/lab02-Lfsanchez2
+no makefile
+build: github.com/cs-315-03-20f/lab02-hhshah2
+no makefile
+build: github.com/cs-315-03-20f/lab02-Alex-Ignus
+no makefile
+build: github.com/cs-315-03-20f/lab02-ezakharian
+build: github.com/cs-315-03-20f/lab02-TiffChau
+  run: github.com/cs-315-03-20f/lab02-minaabdellatif/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-minaabdellatif/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-minaabdellatif/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-jsalvarenga/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-jsalvarenga/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-jsalvarenga/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-AndrewRCabezudo/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-AndrewRCabezudo/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-AndrewRCabezudo/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-chenxpeng/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-chenxpeng/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-chenxpeng/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-Jdlc224/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-Jdlc224/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-Jdlc224/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-fotakis08/ [1;32mPass[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-fotakis08/ [1;32mPass[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-fotakis08/ [1;32mPass[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-mgaldi/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-mgaldi/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-mgaldi/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-jnhamid/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-jnhamid/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-jnhamid/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-alhanson7210/ [1;32mPass[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-alhanson7210/ [1;32mPass[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-alhanson7210/ [1;32mPass[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-Omnitrix4m3/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-Omnitrix4m3/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-Omnitrix4m3/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-NotCarbonatedWater/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-NotCarbonatedWater/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-NotCarbonatedWater/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-yjin34/ [1;32mPass[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-yjin34/ [1;32mPass[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-yjin34/ [1;32mPass[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-Gurjot1Kaur/ [1;32mPass[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-Gurjot1Kaur/ [1;32mPass[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-Gurjot1Kaur/ [1;32mPass[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-jenniferlewmunoz/ [1;32mPass[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-jenniferlewmunoz/ [1;32mPass[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-jenniferlewmunoz/ [1;32mPass[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-SigSegRee/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-SigSegRee/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-SigSegRee/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-aemarcovich/ [1;32mPass[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-aemarcovich/ [1;32mPass[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-aemarcovich/ [1;32mPass[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-summarsh/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-summarsh/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-summarsh/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-ctmathews2/ [1;32mPass[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-ctmathews2/ [1;32mPass[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-ctmathews2/ [1;32mPass[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-jakeols/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-jakeols/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-jakeols/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-kaspak/ [1;32mPass[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-kaspak/ [1;32mPass[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-kaspak/ [1;32mPass[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-stewp007/ [1;32mPass[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-stewp007/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-stewp007/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-apreciado98/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-apreciado98/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-apreciado98/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-jwraffety/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-jwraffety/ [1;32mPass[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-jwraffety/ [1;32mPass[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-Lfsanchez2/ [1;32mPass[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-Lfsanchez2/ [1;32mPass[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-Lfsanchez2/ [1;32mPass[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-hhshah2/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-hhshah2/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-hhshah2/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-Alex-Ignus/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-Alex-Ignus/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-Alex-Ignus/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-ezakharian/ [1;31mFail[0m for test case: funcs
+  run: github.com/cs-315-03-20f/lab02-ezakharian/ [1;31mFail[0m for test case: vars
+  run: github.com/cs-315-03-20f/lab02-ezakharian/ [1;31mFail[0m for test case: simple
+  run: github.com/cs-315-03-20f/lab02-TiffChau/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-TiffChau/ no executable - did the program build?
+  run: github.com/cs-315-03-20f/lab02-TiffChau/ no executable - did the program build?
+score: github.com/cs-315-03-20f/lab02-minaabdellatif 0
+score: github.com/cs-315-03-20f/lab02-jsalvarenga 0
+score: github.com/cs-315-03-20f/lab02-AndrewRCabezudo 0
+score: github.com/cs-315-03-20f/lab02-chenxpeng 0
+score: github.com/cs-315-03-20f/lab02-Jdlc224 0
+score: github.com/cs-315-03-20f/lab02-fotakis08 75
+score: github.com/cs-315-03-20f/lab02-mgaldi 0
+score: github.com/cs-315-03-20f/lab02-jnhamid 0
+score: github.com/cs-315-03-20f/lab02-alhanson7210 75
+score: github.com/cs-315-03-20f/lab02-Omnitrix4m3 0
+score: github.com/cs-315-03-20f/lab02-NotCarbonatedWater 0
+score: github.com/cs-315-03-20f/lab02-yjin34 75
+score: github.com/cs-315-03-20f/lab02-Gurjot1Kaur 75
+score: github.com/cs-315-03-20f/lab02-jenniferlewmunoz 75
+score: github.com/cs-315-03-20f/lab02-SigSegRee 0
+score: github.com/cs-315-03-20f/lab02-aemarcovich 75
+score: github.com/cs-315-03-20f/lab02-summarsh 0
+score: github.com/cs-315-03-20f/lab02-ctmathews2 75
+score: github.com/cs-315-03-20f/lab02-jakeols 0
+score: github.com/cs-315-03-20f/lab02-kaspak 75
+score: github.com/cs-315-03-20f/lab02-stewp007 25
+score: github.com/cs-315-03-20f/lab02-apreciado98 0
+score: github.com/cs-315-03-20f/lab02-jwraffety 50
+score: github.com/cs-315-03-20f/lab02-Lfsanchez2 75
+score: github.com/cs-315-03-20f/lab02-hhshah2 0
+score: github.com/cs-315-03-20f/lab02-Alex-Ignus 0
+score: github.com/cs-315-03-20f/lab02-ezakharian 0
+score: github.com/cs-315-03-20f/lab02-TiffChau 0

@@ -60,7 +60,7 @@ BUILD_SUFFIX = /__build__
 $(foreach d, $(DIRECTORIES), $(eval BUILD_TARGETS += $(d)$(BUILD_SUFFIX)))
 
 RUN_SUFFIX = /__run__
-$(foreach d, $(DIRECTORIES), $(foreach i, $(wildcard $(TESTS_DIR)/*.input), \
+$(foreach d, $(DIRECTORIES), $(foreach i, $(shell ls $(TESTS_DIR)/*.input), \
 	$(eval RUN_TARGETS += $(d)/$(basename $(notdir $(i)))$(RUN_SUFFIX))))
 
 SCORE_SUFFIX = /__score__

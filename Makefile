@@ -10,19 +10,18 @@
 # STUDENTS=gdbenson \
 # phpeterson-usf
 
-# STUDENTS is only required if DIR is not defined
+# STUDENTS and ORG are required if DIR is not defined
 ifndef DIR
 ifndef STUDENTS
 $(error STUDENTS is not set)
+endif
+ifndef ORG
+$(error ORG is not set)
 endif
 endif
 
 ifndef PROJECT
 $(error PROJECT is not set)
-endif
-
-ifndef ORG
-$(error ORG is not set)
 endif
 
 ROOT_DIR := $(PWD)

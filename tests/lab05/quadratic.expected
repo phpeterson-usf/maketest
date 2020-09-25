@@ -1,0 +1,4 @@
+quadtratic_c(1, 1, 1, 1) = 3
+quadtratic_s(1, 1, 1, 1) = 3
+quadtratic_c(2, 2, 3, 4) = 18
+quadtratic_s(2, 2, 3, 4) = 18

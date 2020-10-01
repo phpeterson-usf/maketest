@@ -1,0 +1,12 @@
+fib_rec_c(0) = 0
+fib_rec_c(0) = 0
+fib_rec_c(1) = 1
+fib_rec_s(1) = 1
+fib_rec_c(2) = 1
+fib_rec_s(2) = 1
+fib_rec_c(3) = 2
+fib_rec_s(3) = 2
+fib_rec_c(10) = 55
+fib_rec_s(10) = 55
+fib_rec_c(20) = 6765
+fib_rec_s(20) = 6765

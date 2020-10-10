@@ -1,1 +1,1 @@
-$(TESTS_DIR)/first.s
+-h $(repo_dir)/first.hex $(TESTS_DIR)/first.s

@@ -1,1 +1,1 @@
-$(TESTS_DIR)/mem.s
+-h $(repo_dir)/mem.hex $(TESTS_DIR)/mem.s

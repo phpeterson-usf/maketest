@@ -58,7 +58,7 @@ $(foreach d, $(DIRECTORIES), $(eval BUILD_TARGETS += $(d)$(BUILD_SUFFIX)))
 
 RUN_SUFFIX = /__run__
 $(foreach d, $(DIRECTORIES), $(foreach i, $(shell ls $(TESTS_DIR)/*.input), \
-	$(eval RUN_TARGETS += $(d)/$(basename $(notdir $(i)))$(RUN_SUFFIX))))
+	$(eval RUN_TARGETS += $(d)$(basename $(notdir $(i)))$(RUN_SUFFIX))))
 
 SCORE_SUFFIX = /__score__
 $(foreach d, $(DIRECTORIES), $(eval SCORE_TARGETS += $(d)$(SCORE_SUFFIX)))
@@ -149,12 +149,10 @@ $(RUN_TARGETS):
 		# If the project's output is not on stdout, we use $(test_case).altactual to contain
 		# the name of the output file which will be diff'd against $(test_case).expected 
 		$(eval alt_actual_file = $(TESTS_DIR)/$(test_case).altactual)
+		$(eval actual_file = $(repo_dir)/$(test_case).actual)
 		if [ -f $(alt_actual_file) ]; then
 			echo -n "" # ugly workaround for make syntax rules
 			$(eval actual_file = $(repo_dir)/$(file < $(alt_actual_file)))
-		else
-			echo -n ""
-			$(eval actual_file = $(repo_dir)/$(test_case).actual)
 		fi
 
 		if [ -f $(actual_file) ]; then

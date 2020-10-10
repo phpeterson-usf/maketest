@@ -1,1 +1,1 @@
-$(TESTS_DIR)/mov-add-b.s
+-h $(repo_dir)/mov-add-b.hex $(TESTS_DIR)/mov-add-b.s

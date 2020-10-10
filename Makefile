@@ -149,27 +149,23 @@ $(RUN_TARGETS):
 		# If the project's output is not on stdout, we use $(test_case).altactual to contain
 		# the name of the output file which will be diff'd against $(test_case).expected 
 		$(eval alt_actual_file = $(TESTS_DIR)/$(test_case).altactual)
-		$(eval actual_file = $(repo_dir)/$(test_case).actual)
-		if [ -f $(alt_actual_file) ]; then
-			echo -n "" # ugly workaround for make syntax rules
-			$(eval actual_file = $(repo_dir)/$(file < $(alt_actual_file)))
-		fi
+		$(eval actual_file = $(repo_dir)$(test_case).actual)
 
-		if [ -f $(actual_file) ]; then
+		if [ -f $(alt_actual_file) ]; then
+			$(eval actual_file = $(repo_dir)/$(file < $(alt_actual_file)))
 			diff -b -i -s $(actual_file) $(TESTS_DIR)/$(test_case).expected >>$(LOG_FILE)
-			if [ $$? -eq 0 ]; then
-				# .actual == .expected
-				$(call echo_nt, "\e[1;32mPass\e[0m")
-				$(eval rubric = $(file < $(rubric_file)))
-				$(call echo_nt, " + "$(rubric) >> $(score_file))
-			else
-				# .actual != .expected
-				$(call echo_nt, "\e[1;31mFail\e[0m")
-				$(call echo_nt, " + 0" >> $(score_file))
-			fi
 		else
-			# Program ran but no .actual. Seg fault?
-			$(call echo_t, "no actual - did the program crash?")
+			$(eval actual_file = $(repo_dir)$(test_case).actual)
+			diff -b -i -s $(actual_file) $(TESTS_DIR)/$(test_case).expected >>$(LOG_FILE)
+		fi
+		if [ $$? -eq 0 ]; then
+			# .actual == .expected
+			$(call echo_nt, "\e[1;32mPass\e[0m")
+			$(eval rubric = $(file < $(rubric_file)))
+			$(call echo_nt, " + "$(rubric) >> $(score_file))
+		else
+			# .actual != .expected
+			$(call echo_nt, "\e[1;31mFail\e[0m")
 			$(call echo_nt, " + 0" >> $(score_file))
 		fi
 		$(call echo_t, " for test case: "$(test_case))

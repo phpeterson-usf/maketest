@@ -1,0 +1,1 @@
+-h $(repo_dir)/quadratic.hex $(TESTS_DIR)/quadratic_s.s

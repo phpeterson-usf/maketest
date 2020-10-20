@@ -1,0 +1,1 @@
+-h $(repo_dir)/memi.hex $(TESTS_DIR)/memi.s

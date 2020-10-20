@@ -1,0 +1,1 @@
+-h $(repo_dir)/lsi.hex $(TESTS_DIR)/lsi.s

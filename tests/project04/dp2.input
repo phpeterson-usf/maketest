@@ -1,0 +1,1 @@
+-h $(repo_dir)/dp2.hex $(TESTS_DIR)/dp2.s

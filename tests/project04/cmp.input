@@ -1,0 +1,1 @@
+-h $(repo_dir)/cmp.hex $(TESTS_DIR)/cmp.s

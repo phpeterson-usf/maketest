@@ -1,0 +1,1 @@
+-h $(repo_dir)/b1.hex $(TESTS_DIR)/b1.s

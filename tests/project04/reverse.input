@@ -1,0 +1,1 @@
+-h $(repo_dir)/reverse.hex $(TESTS_DIR)/reverse_s.s
